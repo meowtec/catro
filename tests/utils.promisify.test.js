@@ -8,7 +8,7 @@ const fs = promisify.fs
 const emitterPromisify = promisify.emitterPromisify
 const EventEmitter = require('events').EventEmitter
 
-describe('promosify', () => {
+describe('#promosify', () => {
   it('should promisify work', (done) => {
     function x(arg, callback) {
       setTimeout(() => {
@@ -33,7 +33,7 @@ describe('promosify', () => {
   })
 })
 
-describe('promosify.fs', () => {
+describe('#promosify.fs', () => {
 
   it('should fs.readFile success', (done) => {
     const file = path.resolve(__dirname, './plain/a.txt')
@@ -92,7 +92,7 @@ describe('promosify.fs', () => {
 
 })
 
-describe('emitterPromisify', function() {
+describe('#emitterPromisify', function() {
   it('should transform EventEmitter to promise', (done) => {
     const event = new EventEmitter()
     const promise = emitterPromisify(event, 'success')
@@ -104,7 +104,7 @@ describe('emitterPromisify', function() {
 })
 
 
-describe('emitterPromisify with catch', function() {
+describe('#emitterPromisify with catch', function() {
   it('should transform EventEmitter to promise', (done) => {
     const event = new EventEmitter()
     const promise = emitterPromisify(event, 'success')
