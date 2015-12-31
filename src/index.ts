@@ -50,7 +50,7 @@ export default class Proxy extends EventEmitter {
       certManager.setup(path.resolve(__dirname, './cert'))
     }
 
-    this.initialMainServer()
+    await this.initialMainServer()
     await this.initialHttpsServers()
   }
 
@@ -93,7 +93,7 @@ export default class Proxy extends EventEmitter {
       const port = server.address().port
       console.log('HTTPS server pool new: ' + domain + ', local PORT: ' + port)
 
-      server.on('request', this.handleConnect.bind(this, 'https'))
+      server.on('request', this.handleRequest.bind(this, 'https'))
 
       server.on('clientError', (error: Error, socket: net.Socket) => {
         console.log('HTTPS server on:clientError: ', error, error.stack)
@@ -109,46 +109,52 @@ export default class Proxy extends EventEmitter {
     this.emit('request', requestHandler)
   }
 
-  async handleConnect(req: http.ServerRequest, socket: net.Socket) {
+  handleConnect(req: http.ServerRequest, socket: net.Socket) {
     console.log('Proxy on:connect: ' + req.url)
 
-    let hostInfo = _.parseHost(req.url)
-    let tcpAddr: {
-      host: string
-      port: number
-    }
-
-    if (this.options.https) {
-      let server = await this.httpsServerPool.getServer(hostInfo.host)
-
-      tcpAddr = {
-        host: '0.0.0.0',
-        port: server.address().port
+    ;(async () => {
+      let hostInfo = _.parseHost(req.url)
+      let tcpAddr: {
+        host: string
+        port: number
       }
-    }
-    else {
-      tcpAddr = hostInfo
-    }
 
-    const hostString = tcpAddr.host + ':' + tcpAddr.port
-    console.log('Client want connect: ' + req.url + ', will connect to: ' + hostString)
+      if (this.options.https) {
+        let server = await this.httpsServerPool.getServer(hostInfo.host)
 
-    let upSocket = net.connect(tcpAddr)
+        tcpAddr = {
+          host: '127.0.0.1',
+          port: server.address().port
+        }
+      }
+      else {
+        tcpAddr = hostInfo
+      }
 
-    upSocket.on('connect', function() {
-      socket.write('HTTP/' + req.httpVersion + ' 200 OK\r\n\r\n', 'UTF-8')
-      upSocket.pipe(socket)
-      socket.pipe(upSocket)
+      const hostString = tcpAddr.host + ':' + tcpAddr.port
+      console.log('Client want connect: ' + req.url + ', will connect to: ' + hostString)
+
+      let upSocket = net.connect(tcpAddr)
+
+      upSocket.on('connect', function() {
+        socket.write('HTTP/' + req.httpVersion + ' 200 OK\r\n\r\n', 'UTF-8')
+        upSocket.pipe(socket)
+        socket.pipe(upSocket)
+      })
+
+      upSocket.on('error', (error: Error) => {
+        console.log('Socket on:error: ' + hostString, error, error.stack)
+      })
+
+      upSocket.on('timeout', () => {
+        upSocket.destroy()
+        console.log('Socket on:timeout: ' + hostString)
+      })
+    })()
+    .catch((error) => {
+      console.log('HandleConnect error: ', error)
     })
 
-    upSocket.on('error', (error: Error) => {
-      console.log('Socket on:error: ' + hostString, error, error.stack)
-    })
-
-    upSocket.on('timeout', () => {
-      upSocket.destroy()
-      console.log('Socket on:timeout: ' + hostString)
-    })
   }
 
   // APIs

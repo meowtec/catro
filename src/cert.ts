@@ -6,9 +6,10 @@ import { spawn, ChildProcess } from 'child_process'
 import { fs } from './utils/promisify'
 
 /** return Error */
-const spawnError = (childProcess) => {
-  var err = new Error('Spawn error:\n' + childProcess.spawnargs.join(' '))
-  err.name = 'SpawnError'
+const spawnError = (childProcess, err) => {
+  var error = new Error('Spawn error:\n' + childProcess.spawnargs.join(' '))
+  error.name = 'SpawnError'
+  error.message = err.message
   return err
 }
 
@@ -18,7 +19,7 @@ const promisifyChildProcess = (childProcess: ChildProcess) => {
     // childProcess.stderr.pipe(process.stdout)
 
     childProcess.on('close', (err) => {
-      err ? reject(spawnError(childProcess)) : resolve()
+      err ? reject(spawnError(childProcess, err)) : resolve()
     })
   })
 }
@@ -127,7 +128,7 @@ export class CertManager {
       await promisifyChildProcess(this.genKey(domain))
       await promisifyChildProcess(this.genReq(domain))
       await promisifyChildProcess(this.genCert(domain))
-      await fs.unlink(this.rootPath + '/${domain}.csr')
+      await fs.unlink(this.rootPath + `/${domain}.csr`)
       certs = await this.readCerts(domain)
       console.log('CertPair Create: ' + domain)
     }
@@ -140,6 +141,7 @@ export class CertManager {
     if (!isRootCAExist) {
       await promisifyChildProcess(this.genCAKey())
       await promisifyChildProcess(this.genCACert())
+      console.log('Root CA has been created! at: ' + this.rootPath + '/rootca.key')
     }
   }
 
