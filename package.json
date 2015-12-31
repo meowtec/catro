@@ -6,7 +6,7 @@
   "scripts": {
     "debug": "npm run build && WALNUT_DEBUG=1 node built/example.js",
     "build": "rm -rf built && tsc -p .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha tests"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +14,7 @@
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {
+    "mocha": "~2.3.4",
     "tsd": "~0.6.5",
     "typescript": "~1.8.0-dev.20151219"
   }

@@ -16,7 +16,6 @@ export default class Pool extends EventEmitter {
   }
 
   async getServer(domain: string) {
-    console.log('get server start')
     const cache = this.serverMap.get(domain)
 
     if (cache) {
@@ -24,7 +23,6 @@ export default class Pool extends EventEmitter {
     }
 
     const certData = await certManager.getCerts(domain)
-    console.log('get cert start')
     const newServer = https.createServer(certData)
 
     /**
@@ -32,7 +30,6 @@ export default class Pool extends EventEmitter {
      * 待 listening 触发进行下一步
      */
     await emitterPromisify(newServer.listen(0), 'listening')
-    console.log('get server listened')
     /**
      * 如果 server 持续 60s 内没有收到请求，则关闭
      */

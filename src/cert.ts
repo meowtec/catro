@@ -103,11 +103,8 @@ export class CertManager {
   }
 
   async readCerts (domain: string) {
-    console.log('read')
     let key = await fs.readFile(`${this.rootPath}/${domain}.key`)
-    console.log('read1')
     let cert = await fs.readFile(`${this.rootPath}/${domain}.crt`)
-    console.log('read2')
     return {
       key: key,
       cert: cert
