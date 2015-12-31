@@ -23,22 +23,29 @@ export default function promisify(callback: Function, context?) {
 */
 ;
 
-export default function promisify(callback: Function, context?) {
+export default function promisify(callback: Function, context?, ifErr?: boolean) {
+
+  if (ifErr == null) {
+    ifErr = true
+  }
+
   return function(arg1?, arg2?) {
     const args = [].slice.call(arguments)
 
     return new Promise((resolve, reject) => {
-
       args.push(function(err) {
-        const rest = [].slice.call(arguments, 1)
-        if (err) {
+        let rest = arguments
+        if (ifErr) {
+          rest = [].slice.call(rest, 1)
+        }
+
+        if (err && ifErr) {
           reject(err)
         }
         else {
-          resolve.apply(rest)
+          resolve.apply(null, rest)
         }
       })
-
       callback.apply(context, args)
     })
   }
@@ -69,5 +76,5 @@ export interface BooleanPromise {
 export const fs = {
   readFile: <ReadFilePromise>promisify(fileSystem.readFile, fileSystem),
   unlink: promisify(fileSystem.unlink, fileSystem),
-  exists: <BooleanPromise>promisify(fileSystem.exists, fileSystem)
+  exists: <BooleanPromise>promisify(fileSystem.exists, fileSystem, false)
 }
