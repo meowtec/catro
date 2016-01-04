@@ -11,7 +11,7 @@ export default function serv(req: http.IncomingMessage, res: http.ServerResponse
   let urlObj = url.parse(requestUrl)
 
   if (urlObj.pathname === '/ca.crt') {
-    return certManager.getCerts('rootca').then(function(cert) {
+    return certManager.getCerts('rootca').then((cert) => {
       res.writeHead(200, {
         'Content-Type': 'application/x-x509-ca-cert'
       })
