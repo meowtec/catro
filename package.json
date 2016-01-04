@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "minilog": "~3.0.0",
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {

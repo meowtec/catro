@@ -10,8 +10,9 @@ import certManager from './cert'
 import { CertManager } from './cert'
 import * as _ from './utils/utils'
 import HttpsServerPool from './https-server-pool'
-
 import { Headers, Request, Response } from './typed'
+
+const logger = _.log('index')
 
 export interface Options {
   /** proxy port */
@@ -71,7 +72,7 @@ export default class Proxy extends EventEmitter {
       proxy.on('request', this.handleRequest.bind(this, 'http'))
       proxy.on('connect', this.handleConnect.bind(this))
       proxy.on('clientError', (error: Error, socket: net.Socket) => {
-        console.log('Proxy on:clientError: ', error, error.stack)
+        logger.error('Proxy on:clientError: ', error, error.stack)
       })
 
       proxy.listen(this.options.port, '0.0.0.0', (err) => {
@@ -79,7 +80,7 @@ export default class Proxy extends EventEmitter {
           reject(err)
         }
         else {
-          console.log('Proxy Start: 127.0.0.1:' + this.options.port)
+          logger.info('Proxy Start: 127.0.0.1:' + this.options.port)
           resolve(proxy)
         }
       })
@@ -91,18 +92,18 @@ export default class Proxy extends EventEmitter {
 
     this.httpsServerPool.on('new', (server: https.Server, domain) => {
       const port = server.address().port
-      console.log('HTTPS server pool new: ' + domain + ', local PORT: ' + port)
+      logger.info('HTTPS server pool new: ' + domain + ', local PORT: ' + port)
 
       server.on('request', this.handleRequest.bind(this, 'https'))
 
       server.on('clientError', (error: Error, socket: net.Socket) => {
-        console.log('HTTPS server on:clientError: ', error, error.stack)
+        logger.error('HTTPS server on:clientError: ', error, error.stack)
       })
     })
   }
 
   handleRequest(scheme: string, req: http.IncomingMessage, res: http.ServerResponse) {
-    console.log('Proxy on:request: ' + req.url)
+    logger.info('Proxy on:request: ' + req.url)
 
     let requestHandler: RequestHandler = new RequestHandler(scheme, req, res)
 
@@ -110,7 +111,7 @@ export default class Proxy extends EventEmitter {
   }
 
   handleConnect(req: http.ServerRequest, socket: net.Socket) {
-    console.log('Proxy on:connect: ' + req.url)
+    logger.info('Proxy on:connect: ' + req.url)
 
     ;(async () => {
       let hostInfo = _.parseHost(req.url)
@@ -132,7 +133,7 @@ export default class Proxy extends EventEmitter {
       }
 
       const hostString = tcpAddr.host + ':' + tcpAddr.port
-      console.log('Client want connect: ' + req.url + ', will connect to: ' + hostString)
+      logger.info('Client want connect: ' + req.url + ', will connect to: ' + hostString)
 
       let upSocket = net.connect(tcpAddr)
 
@@ -143,16 +144,16 @@ export default class Proxy extends EventEmitter {
       })
 
       upSocket.on('error', (error: Error) => {
-        console.log('Socket on:error: ' + hostString, error, error.stack)
+        logger.error('Socket on:error: ' + hostString, error, error.stack)
       })
 
       upSocket.on('timeout', () => {
         upSocket.destroy()
-        console.log('Socket on:timeout: ' + hostString)
+        logger.warn('Socket on:timeout: ' + hostString)
       })
     })()
     .catch((error) => {
-      console.log('HandleConnect error: ', error)
+      logger.error('HandleConnect error: ', error)
     })
 
   }

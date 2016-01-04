@@ -12,6 +12,8 @@ import * as cert from './cert'
 import { Headers, Request, Response } from './typed'
 import { emitterPromisify } from './utils/promisify'
 
+const logger = _.log('request')
+
 /**
  * 如果是 production 环境，proxy 请求远程服务器时会忽略证书认证失败的情况
  */
@@ -156,7 +158,7 @@ export default class RequestHandler {
   }
 
   handleError(error) {
-    console.log('request onError: ', error)
+    logger.error(error)
   }
 
   returnError(code: number) {

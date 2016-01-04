@@ -6,13 +6,16 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "node/node.d.ts": {
-      "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
+      "commit": "4461eb91e7c18684a3a50a4f1ad5a7c0b1ecd626"
     },
     "mkdirp/mkdirp.d.ts": {
       "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
     },
     "mocha/mocha.d.ts": {
       "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
+    },
+    "minilog/minilog.d.ts": {
+      "commit": "161a175f8584bb9fb242fde066fcd02afac0c8b4"
     }
   }
 }

@@ -5,6 +5,10 @@ import * as mkdirp from 'mkdirp'
 import { spawn, ChildProcess } from 'child_process'
 import { fs } from './utils/promisify'
 
+import { log } from './utils/utils'
+
+const logger = log('cert')
+
 /** return Error */
 const spawnError = (childProcess, err) => {
   var error = new Error('Spawn error:\n' + childProcess.spawnargs.join(' '))
@@ -130,7 +134,7 @@ export class CertManager {
       await promisifyChildProcess(this.genCert(domain))
       await fs.unlink(this.rootPath + `/${domain}.csr`)
       certs = await this.readCerts(domain)
-      console.log('CertPair Create: ' + domain)
+      logger.info('CertPair Create: ' + domain)
     }
 
     return certs
@@ -141,7 +145,7 @@ export class CertManager {
     if (!isRootCAExist) {
       await promisifyChildProcess(this.genCAKey())
       await promisifyChildProcess(this.genCACert())
-      console.log('Root CA has been created! at: ' + this.rootPath + '/rootca.key')
+      logger.info('Root CA has been created! at: ' + this.rootPath + '/rootca.key')
     }
   }
 
