@@ -1,12 +1,12 @@
 'use strict'
 
-const assert = require("assert")
-const sysfs = require('fs')
-const path = require('path')
-const promisify = require('../built/utils/promisify')
-const fs = promisify.fs
-const emitterPromisify = promisify.emitterPromisify
-const EventEmitter = require('events').EventEmitter
+import * as assert from 'assert'
+import * as sysfs from 'fs'
+import * as path from 'path'
+import { fs, emitterPromisify } from '../utils/promisify'
+import promisify from '../utils/promisify'
+import { EventEmitter } from 'events'
+import { resource } from './utils/'
 
 describe('#promosify', () => {
   it('should promisify work', (done) => {
@@ -21,7 +21,7 @@ describe('#promosify', () => {
 
       }, 0)
     }
-    const newX = promisify.default(x, null)
+    const newX = promisify(x, null)
 
     newX(false)
     .catch((err) => {
@@ -36,7 +36,7 @@ describe('#promosify', () => {
 describe('#promosify.fs', () => {
 
   it('should fs.readFile success', (done) => {
-    const file = path.resolve(__dirname, './plain/a.txt')
+    const file = resource('./plain/a.txt')
     const shouldBuffer = sysfs.readFileSync(file)
 
     fs.readFile(file)
@@ -50,7 +50,7 @@ describe('#promosify.fs', () => {
   })
 
   it('should fs.readFile fail', (done) => {
-    const file = path.resolve(__dirname, './plain/not_exist.txt')
+    const file = resource('./plain/not_exist.txt')
 
     fs.readFile(file)
     .then((buffer) => assert.fail(), () => {})
@@ -58,19 +58,19 @@ describe('#promosify.fs', () => {
   })
 
   it('should fs.exists existed', (done) => {
-    fs.exists(path.resolve(__dirname, './plain/a.txt'))
+    fs.exists(resource('./plain/a.txt'))
     .then((exist) => assert.equal(exist, true))
     .then(done, done)
   })
 
   it('should fs.exists not existed', (done) => {
-    fs.exists(path.resolve(__dirname, './plain/not_exist.txt'))
+    fs.exists(resource('./plain/not_exist.txt'))
     .then((exist) => assert.equal(exist, false))
     .then(done, done)
   })
 
   it('should fs.unlink success', (done) => {
-    const file = path.resolve(__dirname, './plain/temp.txt')
+    const file = resource('./plain/temp.txt')
     sysfs.writeFileSync(file, '123')
 
     fs.unlink(file)
@@ -81,7 +81,7 @@ describe('#promosify.fs', () => {
   })
 
   it('should fs.unlink fail', (done) => {
-    const file = path.resolve(__dirname, './plain/temp.txt')
+    const file = resource('./plain/temp.txt')
 
     fs.unlink(file)
     .then(() => {

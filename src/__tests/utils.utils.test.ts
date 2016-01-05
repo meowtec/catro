@@ -1,7 +1,7 @@
 'use strict'
 
-const assert = require("assert")
-const _ = require('../built/utils/utils')
+import * as assert from 'assert'
+import * as _ from '../utils/utils'
 
 describe('#utils', () => {
 
