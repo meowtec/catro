@@ -63,7 +63,7 @@ export default class RequestHandler {
       // TODO use: ({hostname, port, path} = url.parse(requestUrl))
       let url_ = url.parse(requestUrl)
 
-      hostname = url_.host
+      hostname = url_.hostname
       port = url_.port
       path = url_.path
     }
