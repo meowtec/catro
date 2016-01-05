@@ -27,9 +27,10 @@ const req = request.defaults({
 })
 
 describe('#proxy', () => {
+  const httpServer = 'http://' + localhost + ':' + HTTP_PORT
 
   it('should get correct response', (done) => {
-    req('http://' + localhost + ':' + HTTP_PORT, (error, response, data) => {
+    req(httpServer + '/0x00', (error, response, data) => {
       assert.equal(data, 'hello world, protero!')
       done()
     })

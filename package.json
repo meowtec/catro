@@ -4,7 +4,6 @@
   "description": "HTTP Proxy core",
   "main": "index.js",
   "scripts": {
-    "debug": "npm run build && WALNUT_DEBUG=1 node built/example.js",
     "build": "rm -rf built && tsc -p .",
     "test": "npm run build && cp -r src/__tests/resources ./built/__tests/ && mocha built/__tests"
   },

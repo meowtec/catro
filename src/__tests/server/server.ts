@@ -16,7 +16,7 @@ minilog.enable()
 
 const app = express()
 
-app.get('/', function(req, res) {
+app.get('/0x00', function(req, res) {
   res.send('hello world, protero!')
 })
 
