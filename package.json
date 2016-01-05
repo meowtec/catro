@@ -6,7 +6,7 @@
   "scripts": {
     "debug": "npm run build && WALNUT_DEBUG=1 node built/example.js",
     "build": "rm -rf built && tsc -p .",
-    "test": "mocha tests"
+    "test": "npm run build && cp -r src/__tests/resources ./built/__tests/ && mocha built/__tests"
   },
   "author": "",
   "license": "ISC",
@@ -15,7 +15,9 @@
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {
+    "express": "~4.13.3",
     "mocha": "~2.3.4",
+    "request": "~2.67.0",
     "tsd": "~0.6.5",
     "typescript": "~1.8.0-dev.20151219"
   }
