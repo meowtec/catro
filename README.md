@@ -1,2 +1,2 @@
-# Protero
-Core of [MeowProxy](https://github.com/meowtec/meoproxy).
+# protero
+Core of [MeoProxy](https://github.com/meowtec/meoproxy).
