@@ -17,8 +17,15 @@ minilog.enable()
 const app = express()
 
 app.get('/0x00', function(req, res) {
+  res.setHeader('my-header', '00')
   res.send('hello world, protero!')
 })
+
+app.post('/0x01', function(req, res) {
+  res.setHeader('my-header', req.headers['x-request'])
+  req.pipe(res)
+})
+
 
 export function createHTTPServer(port) {
   return http.createServer(app).listen(port, () => {

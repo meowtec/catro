@@ -16,8 +16,8 @@ describe('#utils', () => {
     setTimeout(fun, 30)
 
     setTimeout(() => assert.equal(test, 0), 30)
-    setTimeout(() => assert.equal(test, 1), 48)
-    setTimeout(done, 50)
+    setTimeout(() => assert.equal(test, 1), 50)
+    setTimeout(done, 55)
   })
 
   it('debounce with variable function', (done) => {
@@ -31,8 +31,8 @@ describe('#utils', () => {
     setTimeout(() => fun(() => test[3]++), 30)
 
     setTimeout(() => assert.deepEqual(test, [0, 0, 0, 0]), 30)
-    setTimeout(() => assert.deepEqual(test, [0, 0, 0, 1]), 48)
-    setTimeout(done, 50)
+    setTimeout(() => assert.deepEqual(test, [0, 0, 0, 1]), 50)
+    setTimeout(done, 55)
   })
 
   it('should parseHost parse host', () => {

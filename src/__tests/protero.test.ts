@@ -3,7 +3,7 @@
 import * as assert from 'assert'
 import * as fs from 'fs'
 import * as http from 'http'
-import * as request from 'request'
+import * as Request from 'request'
 import Proxy from '../index'
 import { createHTTPServer, createHTTPSServer } from './server/server'
 
@@ -22,18 +22,39 @@ const proxy = new Proxy({
   port: PROXY_PORT
 })
 
-const req = request.defaults({
+const request = Request.defaults({
   proxy: 'http://' + localhost + ':' + PROXY_PORT
 })
 
 describe('#proxy', () => {
   const httpServer = 'http://' + localhost + ':' + HTTP_PORT
 
-  it('should get correct response', (done) => {
-    req(httpServer + '/0x00', (error, response, data) => {
+  it('normal response', (done) => {
+    request(httpServer + '/0x00', (error, response, data) => {
       assert.equal(data, 'hello world, protero!')
+      assert.equal(response.headers['content-type'], 'text/html; charset=utf-8')
+      assert.equal(response.headers['my-header'], '00')
       done()
     })
+  })
+
+  it('normal request', (done) => {
+    request({
+      url: httpServer + '/0x01',
+      method: 'POST',
+      headers: {
+        'x-request': 'foo'
+      }
+    }, (error, response, data) => {
+      assert.equal(data, 'name-foo=value-foo&name-bar=value-bar')
+
+      assert.equal(response.headers['my-header'], 'foo')
+      done()
+    }).form({
+      'name-foo': 'value-foo',
+      'name-bar': 'value-bar'
+    })
+
   })
 
 })
