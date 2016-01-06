@@ -1,4 +1,4 @@
-# Koro
+# catro
 HTTP proxy for Node.
 Core of [MeoProxy](https://github.com/meowtec/meoproxy).
 
@@ -26,4 +26,4 @@ npm test
 ```
 
 ## Usage
-see https://github.com/meowtec/koro/blob/master/src/__tests/koro.test.ts
+see https://github.com/meowtec/catro/blob/master/src/__tests/catro.test.ts
