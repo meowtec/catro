@@ -47,8 +47,7 @@ export default class RequestHandler {
     }
 
     this.initialRequest()
-
-    this.start().catch(this.handleError.bind(this))
+    setTimeout(() => this.start().catch(this.handleError.bind(this)))
   }
 
   initialRequest() {
