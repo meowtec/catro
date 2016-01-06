@@ -5,6 +5,7 @@ import * as assert from 'assert'
 import * as http from 'http'
 import * as https from 'https'
 import { Readable } from 'stream'
+import { EventEmitter } from 'events'
 
 import commonServ from './common-serv'
 import * as resources from './res'
@@ -21,7 +22,7 @@ const logger = _.log('request')
 let rejectUnauthorized = process.argv.indexOf('--production') === -1
 
 
-export default class RequestHandler {
+export default class RequestHandler extends EventEmitter {
 
   scheme: string
   req: http.IncomingMessage
@@ -36,6 +37,8 @@ export default class RequestHandler {
   private willBeSent: boolean
 
   constructor(scheme: string, req: http.IncomingMessage, res: http.ServerResponse) {
+    super()
+
     this.scheme = scheme
     this.req = req
     this.res = res
@@ -86,6 +89,11 @@ export default class RequestHandler {
 
   private async start() {
 
+    if (!this.willBeSent) {
+      this.emit('abort')
+      return
+    }
+
     let requestOptions: Request
 
     if (this.replaceRequest) {
@@ -95,23 +103,21 @@ export default class RequestHandler {
       requestOptions = this.request
     }
 
-    if (!this.willBeSent) {
-      return
-    }
-
     const httpResponse = await this.sendRequest(requestOptions)
 
     this.initialResponse(httpResponse)
 
-    let responsethis: Response
+    this.emit('response')
+
+    let responseOptions: Response
     if (this.replaceResponse) {
-      responsethis = await this.replaceResponse(this.response, this)
+      responseOptions = await this.replaceResponse(this.response, this)
     }
     else {
-      responsethis = this.response
+      responseOptions = this.response
     }
 
-    await this.sendResponse(responsethis)
+    await this.sendResponse(responseOptions)
   }
 
   private initialResponse(response: http.IncomingMessage) {
