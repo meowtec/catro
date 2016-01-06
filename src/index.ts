@@ -28,9 +28,9 @@ export interface Options {
 
 export default class Proxy extends EventEmitter {
 
-  options: Options;
-
   httpServer: http.Server;
+
+  private options: Options;
 
   private httpsServerPool: HttpsServerPool;
 
@@ -46,7 +46,7 @@ export default class Proxy extends EventEmitter {
   /**
    * Any error on start can be catched here.
    */
-  async start() {
+  private async start() {
     if (!certManager.setted) {
       certManager.setup(path.resolve(__dirname, './cert'))
     }
@@ -55,15 +55,7 @@ export default class Proxy extends EventEmitter {
     await this.initialHttpsServers()
   }
 
-  static set certRoot(path: string) {
-    certManager.setup(path)
-  }
-
-  static get certManager() {
-    return certManager
-  }
-
-  initialMainServer() {
+  private initialMainServer() {
     return new Promise((resolve, reject) => {
       const proxy = http.createServer()
 
@@ -87,7 +79,7 @@ export default class Proxy extends EventEmitter {
     })
   }
 
-  initialHttpsServers() {
+  private initialHttpsServers() {
     this.httpsServerPool = new HttpsServerPool()
 
     this.httpsServerPool.on('new', (server: https.Server, domain) => {
@@ -102,7 +94,7 @@ export default class Proxy extends EventEmitter {
     })
   }
 
-  handleRequest(scheme: string, req: http.IncomingMessage, res: http.ServerResponse) {
+  private handleRequest(scheme: string, req: http.IncomingMessage, res: http.ServerResponse) {
     logger.info('Proxy on:request: ' + req.url)
 
     let requestHandler: RequestHandler = new RequestHandler(scheme, req, res)
@@ -110,7 +102,7 @@ export default class Proxy extends EventEmitter {
     this.emit('request', requestHandler)
   }
 
-  handleConnect(req: http.ServerRequest, socket: net.Socket) {
+  private handleConnect(req: http.ServerRequest, socket: net.Socket) {
     logger.info('Proxy on:connect: ' + req.url)
 
     ;(async () => {
@@ -156,6 +148,14 @@ export default class Proxy extends EventEmitter {
       logger.error('HandleConnect error: ', error)
     })
 
+  }
+
+  static set certRoot(path: string) {
+    certManager.setup(path)
+  }
+
+  static get certManager() {
+    return certManager
   }
 
   get promise() {

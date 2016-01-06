@@ -23,7 +23,6 @@ let rejectUnauthorized = process.argv.indexOf('--production') === -1
 
 export default class RequestHandler {
 
-  id: string
   scheme: string
   req: http.IncomingMessage
   res: http.ServerResponse
@@ -34,13 +33,13 @@ export default class RequestHandler {
   request: Request
   response: Response
 
-  _willBeSent: boolean
+  private willBeSent: boolean
 
   constructor(scheme: string, req: http.IncomingMessage, res: http.ServerResponse) {
     this.scheme = scheme
     this.req = req
     this.res = res
-    this._willBeSent = true
+    this.willBeSent = true
 
     if (req.url.startsWith('/') && scheme === 'http') {
       return commonServ(req, res)
@@ -50,7 +49,7 @@ export default class RequestHandler {
     setTimeout(() => this.start().catch(this.handleError.bind(this)))
   }
 
-  initialRequest() {
+  private initialRequest() {
     const req = this.req
     const requestUrl = req.url
     const headers = req.headers
@@ -85,7 +84,7 @@ export default class RequestHandler {
     }
   }
 
-  async start() {
+  private async start() {
 
     let requestOptions: Request
 
@@ -96,7 +95,7 @@ export default class RequestHandler {
       requestOptions = this.request
     }
 
-    if (!this._willBeSent) {
+    if (!this.willBeSent) {
       return
     }
 
@@ -115,15 +114,7 @@ export default class RequestHandler {
     await this.sendResponse(responsethis)
   }
 
-  get requestEditable() {
-    return true
-  }
-
-  get responseEditable() {
-    return true
-  }
-
-  initialResponse(response: http.IncomingMessage) {
+  private initialResponse(response: http.IncomingMessage) {
     this.response = {
       status: response.statusCode,
       headers: response.headers,
@@ -131,9 +122,8 @@ export default class RequestHandler {
     }
   }
 
-  sendRequest(request: Request) {
+  private sendRequest(request: Request) {
     let res = this.res
-    let id = this.id
     let factory = this.scheme === 'https' ? https : http
 
     let upRequest = factory.request(Object.assign({
@@ -159,7 +149,7 @@ export default class RequestHandler {
 
   }
 
-  sendResponse(response: Response) {
+  private sendResponse(response: Response) {
     const res = this.res
     res.writeHead(response.status, response.headers)
 
@@ -172,17 +162,17 @@ export default class RequestHandler {
     }
   }
 
-  handleError(error) {
+  private handleError(error) {
     logger.error(error)
   }
 
-  returnError(code: number) {
+  private returnError(code: number) {
     this.res.writeHead(code, {'Content-Type': 'text/html'})
     this.res.end(resources.get(code + '.html'))
   }
 
   public preventRequest() {
-    this._willBeSent = false
+    this.willBeSent = false
   }
 
 }
