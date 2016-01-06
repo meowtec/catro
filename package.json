@@ -1,5 +1,5 @@
 {
-  "name": "protero",
+  "name": "koro",
   "version": "0.1.0",
   "description": "HTTP Proxy core",
   "main": "built/index.js",
