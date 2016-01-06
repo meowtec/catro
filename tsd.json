@@ -1,6 +1,6 @@
 {
   "version": "v4",
-  "repo": "borisyankov/DefinitelyTyped",
+  "repo": "DefinitelyTyped/DefinitelyTyped",
   "ref": "master",
   "path": "typings",
   "bundle": "typings/tsd.d.ts",
@@ -13,9 +13,6 @@
     },
     "mocha/mocha.d.ts": {
       "commit": "dc9dabe74a5be62613b17a3605309783a12ff28a"
-    },
-    "minilog/minilog.d.ts": {
-      "commit": "161a175f8584bb9fb242fde066fcd02afac0c8b4"
     },
     "mime/mime.d.ts": {
       "commit": "419793fb796b0e5c1ed11e018ad28475de0c3735"
