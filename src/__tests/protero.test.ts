@@ -96,4 +96,43 @@ describe('#proxy', () => {
 
   })
 
+
+  it('replace response status and headers', (done) => {
+
+    proxy.once('request', (requestHandler: RequestHandler) => {
+      requestHandler.replaceResponse = (response) => {
+        return Object.assign({}, response, {
+          status: 404,
+          headers: {
+            'x-replace': 'y'
+          }
+        })
+      }
+    })
+
+    request(httpServer + '/0x00', (error, response, data) => {
+      assert.equal(response.statusCode, 404)
+      assert.equal(response.headers['x-replace'], 'y')
+      done()
+    })
+
+  })
+
+  it('replace response body', (done) => {
+
+    proxy.once('request', (requestHandler: RequestHandler) => {
+      requestHandler.replaceResponse = (response) => {
+        return Object.assign({}, response, {
+          body: '123456'
+        })
+      }
+    })
+
+    request(httpServer + '/0x00', (error, response, data) => {
+      assert.equal(data, '123456')
+      done()
+    })
+
+  })
+
 })
