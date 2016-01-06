@@ -1,13 +1,13 @@
 {
-  "name": "walnut",
-  "version": "0.0.0",
+  "name": "protero",
+  "version": "0.1.0",
   "description": "HTTP Proxy core",
-  "main": "index.js",
+  "main": "built/index.js",
   "scripts": {
     "build": "rm -rf built && tsc -p .",
     "test": "npm run build && cp -r src/__tests/resources ./built/__tests/ && mocha built/__tests"
   },
-  "author": "",
+  "author": "Berton Zhu<bertonzh@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "minilog": "~3.0.0",

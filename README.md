@@ -24,5 +24,5 @@ Run test cases.
 npm test
 ```
 
-## API
+## Usage
 see https://github.com/meowtec/protero/blob/master/src/__tests/protero.test.ts
