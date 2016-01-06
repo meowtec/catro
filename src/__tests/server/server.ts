@@ -7,7 +7,7 @@ import * as path from 'path'
 import * as url from 'url'
 import * as express from 'express'
 import * as minilog from 'minilog'
-import { resource } from '../utils/'
+import { resource, radeStreamAll } from '../utils/'
 
 const certPath = (filename) => resource('cert-server/' + filename)
 
@@ -24,6 +24,18 @@ app.get('/0x00', function(req, res) {
 app.post('/0x01', function(req, res) {
   res.setHeader('my-header', req.headers['x-request'])
   req.pipe(res)
+})
+
+app.all('/0x02', function(req, res) {
+  radeStreamAll(req, (data) => {
+    const body = data.toString()
+
+    res.send({
+      headers: req.headers,
+      body: body
+    })
+  })
+
 })
 
 

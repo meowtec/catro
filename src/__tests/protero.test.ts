@@ -57,14 +57,43 @@ describe('#proxy', () => {
     })
   })
 
-  // return
-  // // TODO
-  // it('replace response', (done) => {
+  it('replace request headers', (done) => {
 
-  //   proxy.once('request', (requestHandler: RequestHandler) => {
+    proxy.once('request', (requestHandler: RequestHandler) => {
+      requestHandler.replaceRequest = (request) => {
+        return Object.assign({}, request, {
+          headers: {
+            'x-request': 'request-replace-x'
+          }
+        })
+      }
+    })
 
-  //   })
+    request(httpServer + '/0x02', (error, response, data) => {
+      const json = JSON.parse(data)
+      assert.equal(json.headers['x-request'], 'request-replace-x')
+      done()
+    })
 
-  // })
+  })
+
+  it('replace request body and method', (done) => {
+
+    proxy.once('request', (requestHandler: RequestHandler) => {
+      requestHandler.replaceRequest = (request) => {
+        return Object.assign({}, request, {
+          body: 'replaced.',
+          method: 'POST'
+        })
+      }
+    })
+
+    request(httpServer + '/0x02', (error, response, data) => {
+      const json = JSON.parse(data)
+      assert.equal(json.body, 'replaced.')
+      done()
+    })
+
+  })
 
 })
