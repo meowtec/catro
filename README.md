@@ -1,4 +1,5 @@
-# protero
+# Koro
+HTTP proxy for Node.
 Core of [MeoProxy](https://github.com/meowtec/meoproxy).
 
 ## Development
@@ -25,4 +26,4 @@ npm test
 ```
 
 ## Usage
-see https://github.com/meowtec/protero/blob/master/src/__tests/protero.test.ts
+see https://github.com/meowtec/koro/blob/master/src/__tests/koro.test.ts
