@@ -5,6 +5,7 @@ import * as fs from 'fs'
 import * as http from 'http'
 import * as Request from 'request'
 import Proxy from '../index'
+import RequestHandler from '../request'
 import { createHTTPServer, createHTTPSServer } from './server/server'
 
 const PROXY_PORT = 10069
@@ -54,7 +55,16 @@ describe('#proxy', () => {
       'name-foo': 'value-foo',
       'name-bar': 'value-bar'
     })
-
   })
+
+  // return
+  // // TODO
+  // it('replace response', (done) => {
+
+  //   proxy.once('request', (requestHandler: RequestHandler) => {
+
+  //   })
+
+  // })
 
 })

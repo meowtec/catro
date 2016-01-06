@@ -4,6 +4,7 @@ import * as url from 'url'
 import * as assert from 'assert'
 import * as http from 'http'
 import * as https from 'https'
+import { Readable } from 'stream'
 
 import commonServ from './common-serv'
 import * as resources from './res'
@@ -139,7 +140,14 @@ export default class RequestHandler {
     let upRequest = factory.request(Object.assign({
       rejectUnauthorized
     }, request))
-    request.body.pipe(upRequest)
+
+    let requestBody = request.body
+    if (typeof requestBody === 'string' || Buffer.isBuffer(requestBody)) {
+      upRequest.end(requestBody)
+    }
+    else {
+      requestBody.pipe(upRequest)
+    }
 
     upRequest.on('finish', function() {
       // TODO emit http-data
@@ -153,8 +161,16 @@ export default class RequestHandler {
   }
 
   sendResponse(response: Response) {
-    this.res.writeHead(response.status, response.headers)
-    response.body.pipe(this.res)
+    const res = this.res
+    res.writeHead(response.status, response.headers)
+
+    let responseBody = response.body
+    if (typeof responseBody === 'string' || Buffer.isBuffer(responseBody)) {
+      res.end(responseBody)
+    }
+    else {
+      responseBody.pipe(res)
+    }
   }
 
   handleError(error) {

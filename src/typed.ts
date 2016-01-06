@@ -13,11 +13,11 @@ export interface Request {
   port: number
   path: string
   headers: Headers
-  body: Readable
+  body: Readable | string | Buffer
 }
 
 export interface Response {
   status: number
   headers: Headers
-  body: Readable
+  body: Readable | string | Buffer
 }
