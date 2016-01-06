@@ -158,17 +158,20 @@ export default class Proxy extends EventEmitter {
 
   }
 
+  get promise() {
+    return this.initialPromise
+  }
+
   // APIs
   onRequest(listener: (handler: RequestHandler) => any) {
     this.on('request', listener)
   }
 
-  then(fullfill, fail) {
-    this.initialPromise.then.apply(this.initialPromise, arguments)
-  }
-
-  catch(fail) {
-    this.initialPromise.catch.apply(this.initialPromise, arguments)
+  // TODO
+  // @return Promise<boolean>
+  close() {
+    // this.httpsServerPool.destroy()
+    // this.httpServer.close(callback)
   }
 
 }
