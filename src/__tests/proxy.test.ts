@@ -135,4 +135,21 @@ describe('#proxy', () => {
 
   })
 
+  it('handler events', (done) => {
+    const arr = [0, 0, 0]
+    proxy.once('request', (requestHandler: RequestHandler) => {
+      requestHandler.on('requestFinish', () => arr[0] = 1)
+      requestHandler.on('response', () => arr[1] = 1)
+      requestHandler.on('finish', () => {
+        arr[2] = 1
+
+        assert.deepEqual(arr, [1, 1, 1])
+        done()
+      })
+    })
+
+    request(httpServer + '/0x00', (error, response, data) => {})
+
+  })
+
 })

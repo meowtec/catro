@@ -107,7 +107,7 @@ export default class RequestHandler extends EventEmitter {
 
     this.initialResponse(httpResponse)
 
-    this.emit('response')
+    this.emit('response', this.response)
 
     let responseOptions: Response
     if (this.replaceResponse) {
@@ -118,6 +118,8 @@ export default class RequestHandler extends EventEmitter {
     }
 
     await this.sendResponse(responseOptions)
+
+    this.emit('finish')
   }
 
   private initialResponse(response: http.IncomingMessage) {
@@ -144,9 +146,7 @@ export default class RequestHandler extends EventEmitter {
       requestBody.pipe(upRequest)
     }
 
-    upRequest.on('finish', function() {
-      // TODO emit http-data
-    })
+    upRequest.on('finish', () => this.emit('requestFinish'))
 
     /**
      * req.on('response')
@@ -166,9 +166,12 @@ export default class RequestHandler extends EventEmitter {
     else {
       responseBody.pipe(res)
     }
+
+    return <Promise<any>>emitterPromisify(res, 'finish')
   }
 
   private handleError(error) {
+    this.emit('error', error)
     logger.error(error)
   }
 
