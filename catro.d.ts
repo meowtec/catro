@@ -51,8 +51,7 @@ declare module "catro" {
     /** proxy port */
     port: number;
     /** path to storage certRoot */
-    certRoot?: string;
-    /** whether proxy ssl */
+
     https?: {
         (host: string): boolean;
     } | boolean;
