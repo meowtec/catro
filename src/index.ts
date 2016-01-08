@@ -11,8 +11,9 @@ import { CertManager } from './cert'
 import * as _ from './utils/utils'
 import HttpsServerPool from './https-server-pool'
 import { Headers, Request, Response } from './typed'
+import * as logger from 'minilog'
 
-const logger = _.log('index')
+const LOG = logger('index')
 
 export interface Options {
   /** proxy port */
@@ -23,6 +24,7 @@ export interface Options {
 
   /** whether proxy ssl */
   https?: { (host: string): boolean } | boolean
+
 }
 
 
@@ -64,7 +66,7 @@ export default class Proxy extends EventEmitter {
       proxy.on('request', this.handleRequest.bind(this, 'http'))
       proxy.on('connect', this.handleConnect.bind(this))
       proxy.on('clientError', (error: Error, socket: net.Socket) => {
-        logger.error('Proxy on:clientError: ', error, error.stack)
+        LOG.error('Proxy on:clientError: ', error, error.stack)
       })
 
       proxy.listen(this.options.port, '0.0.0.0', (err) => {
@@ -72,7 +74,7 @@ export default class Proxy extends EventEmitter {
           reject(err)
         }
         else {
-          logger.info('Proxy Start: 127.0.0.1:' + this.options.port)
+          LOG.info('Proxy Start: 127.0.0.1:' + this.options.port)
           resolve(proxy)
         }
       })
@@ -84,26 +86,26 @@ export default class Proxy extends EventEmitter {
 
     this.httpsServerPool.on('new', (server: https.Server, domain) => {
       const port = server.address().port
-      logger.info('HTTPS server pool new: ' + domain + ', local PORT: ' + port)
+      LOG.info('HTTPS server pool new: ' + domain + ', local PORT: ' + port)
 
       server.on('request', this.handleRequest.bind(this, 'https'))
 
       server.on('clientError', (error: Error, socket: net.Socket) => {
-        logger.error('HTTPS server on:clientError: ', error, error.stack)
+        LOG.error('HTTPS server on:clientError: ', error, error.stack)
       })
     })
   }
 
   private handleRequest(scheme: string, req: http.IncomingMessage, res: http.ServerResponse) {
-    logger.info('Proxy on:request: ' + req.url)
+    LOG.info('Proxy on:request: ' + req.url)
 
     let requestHandler: RequestHandler = new RequestHandler(scheme, req, res)
 
-    this.emit('request', requestHandler)
+    this.emit('open', requestHandler)
   }
 
   private handleConnect(req: http.ServerRequest, socket: net.Socket) {
-    logger.info('Proxy on:connect: ' + req.url)
+    LOG.info('Proxy on:connect: ' + req.url)
 
     ;(async () => {
       let hostInfo = _.parseHost(req.url)
@@ -125,7 +127,7 @@ export default class Proxy extends EventEmitter {
       }
 
       const hostString = tcpAddr.host + ':' + tcpAddr.port
-      logger.info('Client want connect: ' + req.url + ', will connect to: ' + hostString)
+      LOG.info('Client want connect: ' + req.url + ', will connect to: ' + hostString)
 
       let upSocket = net.connect(tcpAddr)
 
@@ -136,16 +138,16 @@ export default class Proxy extends EventEmitter {
       })
 
       upSocket.on('error', (error: Error) => {
-        logger.error('Socket on:error: ' + hostString, error, error.stack)
+        LOG.error('Socket on:error: ' + hostString, error, error.stack)
       })
 
       upSocket.on('timeout', () => {
         upSocket.destroy()
-        logger.warn('Socket on:timeout: ' + hostString)
+        LOG.warn('Socket on:timeout: ' + hostString)
       })
     })()
     .catch((error) => {
-      logger.error('HandleConnect error: ', error)
+      LOG.error('HandleConnect error: ', error)
     })
 
   }
@@ -154,24 +156,25 @@ export default class Proxy extends EventEmitter {
     certManager.setup(path)
   }
 
-  static get certManager() {
-    return certManager
+  static get rootCAPath() {
+    return certManager.rootCAPath
+  }
+
+  static get logger() {
+    return logger
   }
 
   get promise() {
     return this.initialPromise
   }
 
-  // APIs
-  onRequest(listener: (handler: RequestHandler) => any) {
-    this.on('request', listener)
-  }
-
-  // TODO
-  // @return Promise<boolean>
-  close() {
-    // this.httpsServerPool.destroy()
-    // this.httpServer.close(callback)
-  }
-
 }
+
+/**
+ * export interfaces that could be used by external.
+ */
+export {
+  Headers, Request, Response
+}
+
+export interface RequestHandler extends RequestHandler {}

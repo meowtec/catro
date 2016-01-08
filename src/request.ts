@@ -13,8 +13,9 @@ import * as _ from './utils/utils'
 import * as cert from './cert'
 import { Headers, Request, Response } from './typed'
 import { emitterPromisify } from './utils/promisify'
+import * as logger from 'minilog'
 
-const logger = _.log('request')
+const LOG = logger('request')
 
 /**
  * 如果是 production 环境，proxy 请求远程服务器时会忽略证书认证失败的情况
@@ -172,7 +173,7 @@ export default class RequestHandler extends EventEmitter {
 
   private handleError(error) {
     this.emit('error', error)
-    logger.error(error)
+    LOG.error(error)
   }
 
   private returnError(code: number) {

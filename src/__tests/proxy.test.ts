@@ -59,7 +59,7 @@ describe('#proxy', () => {
 
   it('replace request headers', (done) => {
 
-    proxy.once('request', (requestHandler: RequestHandler) => {
+    proxy.once('open', (requestHandler: RequestHandler) => {
       requestHandler.replaceRequest = (request) => {
         return Object.assign({}, request, {
           headers: {
@@ -79,7 +79,7 @@ describe('#proxy', () => {
 
   it('replace request body and method', (done) => {
 
-    proxy.once('request', (requestHandler: RequestHandler) => {
+    proxy.once('open', (requestHandler: RequestHandler) => {
       requestHandler.replaceRequest = (request) => {
         return Object.assign({}, request, {
           body: 'replaced.',
@@ -99,7 +99,7 @@ describe('#proxy', () => {
 
   it('replace response status and headers', (done) => {
 
-    proxy.once('request', (requestHandler: RequestHandler) => {
+    proxy.once('open', (requestHandler: RequestHandler) => {
       requestHandler.replaceResponse = (response) => {
         return Object.assign({}, response, {
           status: 404,
@@ -120,7 +120,7 @@ describe('#proxy', () => {
 
   it('replace response body', (done) => {
 
-    proxy.once('request', (requestHandler: RequestHandler) => {
+    proxy.once('open', (requestHandler: RequestHandler) => {
       requestHandler.replaceResponse = (response) => {
         return Object.assign({}, response, {
           body: '123456'
@@ -137,7 +137,7 @@ describe('#proxy', () => {
 
   it('handler events', (done) => {
     const arr = [0, 0, 0]
-    proxy.once('request', (requestHandler: RequestHandler) => {
+    proxy.once('open', (requestHandler: RequestHandler) => {
       requestHandler.on('requestFinish', () => arr[0] = 1)
       requestHandler.on('response', () => arr[1] = 1)
       requestHandler.on('finish', () => {

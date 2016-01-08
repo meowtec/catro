@@ -4,10 +4,9 @@ import * as path from 'path'
 import * as mkdirp from 'mkdirp'
 import { spawn, ChildProcess } from 'child_process'
 import { fs } from './utils/promisify'
+import * as logger from 'minilog'
 
-import { log } from './utils/utils'
-
-const logger = log('cert')
+const LOG = logger('cert')
 
 /** return Error */
 const spawnError = (childProcess, err) => {
@@ -52,6 +51,10 @@ export class CertManager {
 
   get setted() {
     return this._setted
+  }
+
+  get rootCAPath() {
+    return this.rootPath + '/rootca.key'
   }
 
   // 生成 CA 根证书
@@ -134,7 +137,7 @@ export class CertManager {
       await promisifyChildProcess(this.genCert(domain))
       await fs.unlink(this.rootPath + `/${domain}.csr`)
       certs = await this.readCerts(domain)
-      logger.info('CertPair Create: ' + domain)
+      LOG.info('CertPair Create: ' + domain)
     }
 
     return certs
@@ -145,7 +148,7 @@ export class CertManager {
     if (!isRootCAExist) {
       await promisifyChildProcess(this.genCAKey())
       await promisifyChildProcess(this.genCACert())
-      logger.info('Root CA has been created! at: ' + this.rootPath + '/rootca.key')
+      LOG.info('Root CA has been created! at: ' + this.rootPath + '/rootca.key')
     }
   }
 
