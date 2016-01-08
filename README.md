@@ -26,7 +26,7 @@ npm test
 ```
 
 ## Usage
-see https://github.com/meowtec/catro/blob/master/src/__tests/catro.test.ts
+see [proxy.test.ts](https://github.com/meowtec/catro/blob/master/src/__tests/proxy.test.ts)
 
 ## .d.ts
 [catro.d.ts](https://github.com/meowtec/catro/blob/master/catro.d.ts)
