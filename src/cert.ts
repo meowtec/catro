@@ -1,6 +1,5 @@
 'use strict'
 
-import * as path from 'path'
 import * as mkdirp from 'mkdirp'
 import { spawn, ChildProcess } from 'child_process'
 import { fs } from './utils/promisify'
@@ -10,10 +9,10 @@ const LOG = logger('cert')
 
 /** return Error */
 const spawnError = (childProcess, err) => {
-  var error = new Error('Spawn error:\n' + childProcess.spawnargs.join(' '))
+  const error = new Error('Spawn error:\n' + childProcess.spawnargs.join(' '))
   error.name = 'SpawnError'
   error.message = err.message
-  return err
+  return error
 }
 
 /** wrap childProcess to promise */
@@ -111,8 +110,8 @@ export class CertManager {
   }
 
   async readCerts (domain: string) {
-    let key = await fs.readFile(`${this.rootPath}/${domain}.key`)
-    let cert = await fs.readFile(`${this.rootPath}/${domain}.crt`)
+    const key = await fs.readFile(`${this.rootPath}/${domain}.key`)
+    const cert = await fs.readFile(`${this.rootPath}/${domain}.crt`)
     return {
       key: key,
       cert: cert
@@ -144,7 +143,7 @@ export class CertManager {
   }
 
   private async initCA() {
-    let isRootCAExist = await this.rootCAExist()
+    const isRootCAExist = await this.rootCAExist()
     if (!isRootCAExist) {
       await promisifyChildProcess(this.genCAKey())
       await promisifyChildProcess(this.genCACert())

@@ -1,17 +1,13 @@
 'use strict'
 
 import * as url from 'url'
-import * as assert from 'assert'
 import * as http from 'http'
 import * as https from 'https'
-import { Readable } from 'stream'
 import { EventEmitter } from 'events'
 
 import commonServ from './common-serv'
 import * as resources from './res'
-import * as _ from './utils/utils'
-import * as cert from './cert'
-import { Headers, Request, Response } from './typed'
+import { Request, Response } from './typed'
 import { emitterPromisify } from './utils/promisify'
 import * as logger from 'minilog'
 
@@ -20,7 +16,7 @@ const LOG = logger('request')
 /**
  * 如果是 production 环境，proxy 请求远程服务器时会忽略证书认证失败的情况
  */
-let rejectUnauthorized = process.argv.indexOf('--production') === -1
+const rejectUnauthorized = process.argv.indexOf('--production') === -1
 
 
 export default class RequestHandler extends EventEmitter {
@@ -64,7 +60,7 @@ export default class RequestHandler extends EventEmitter {
 
     if (this.scheme === 'http') {
       // TODO use: ({hostname, port, path} = url.parse(requestUrl))
-      let url_ = url.parse(requestUrl)
+      const url_ = url.parse(requestUrl)
 
       hostname = url_.hostname
       port = url_.port
@@ -72,7 +68,7 @@ export default class RequestHandler extends EventEmitter {
     }
     else {
       // TODO use: [hostname, port] = headers['host'].split(':')
-      let host = headers['host'].split(':')
+      const host = headers['host'].split(':')
       hostname = host[0]
       port = host[1]
       path = req.url
@@ -132,14 +128,13 @@ export default class RequestHandler extends EventEmitter {
   }
 
   private sendRequest(request: Request) {
-    let res = this.res
-    let factory = this.scheme === 'https' ? https : http
+    const factory = this.scheme === 'https' ? https : http
 
-    let upRequest = factory.request(Object.assign({
+    const upRequest = factory.request(Object.assign({
       rejectUnauthorized
     }, request))
 
-    let requestBody = request.body
+    const requestBody = request.body
     if (typeof requestBody === 'string' || Buffer.isBuffer(requestBody)) {
       upRequest.end(requestBody)
     }
@@ -160,7 +155,7 @@ export default class RequestHandler extends EventEmitter {
     const res = this.res
     res.writeHead(response.status, response.headers)
 
-    let responseBody = response.body
+    const responseBody = response.body
     if (typeof responseBody === 'string' || Buffer.isBuffer(responseBody)) {
       res.end(responseBody)
     }
@@ -172,6 +167,7 @@ export default class RequestHandler extends EventEmitter {
   }
 
   private handleError(error) {
+    this.returnError(502)
     this.emit('error', error)
     LOG.error(error)
   }

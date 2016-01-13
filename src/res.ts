@@ -3,11 +3,11 @@
 import * as fs from 'fs'
 import * as path from 'path'
 
-var cache = {}
-let resdir = '../resources/html'
+const cache = {}
+const resdir = '../resources/html'
 
 export function get(filename: string): string {
-  var content = cache[filename]
+  let content = cache[filename]
   if (!content) {
     content = fs.readFileSync(path.resolve(__dirname, resdir, filename)).toString()
 

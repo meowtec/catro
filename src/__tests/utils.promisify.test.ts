@@ -2,7 +2,6 @@
 
 import * as assert from 'assert'
 import * as sysfs from 'fs'
-import * as path from 'path'
 import { fs, emitterPromisify } from '../utils/promisify'
 import promisify from '../utils/promisify'
 import { EventEmitter } from 'events'

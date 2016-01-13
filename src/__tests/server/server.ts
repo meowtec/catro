@@ -3,8 +3,6 @@
 import * as https from 'https'
 import * as http from 'http'
 import * as fs from 'fs'
-import * as path from 'path'
-import * as url from 'url'
 import * as express from 'express'
 import * as minilog from 'minilog'
 import { resource, radeStreamAll } from '../utils/'

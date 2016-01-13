@@ -8,7 +8,7 @@ describe('#utils', () => {
   it('debounce with const function', (done) => {
     let test = 0
 
-    let fun = _.debounce(15, () => test++)
+    const fun = _.debounce(15, () => test++)
 
     setTimeout(fun, 0)
     setTimeout(fun, 10)
@@ -23,7 +23,7 @@ describe('#utils', () => {
   it('debounce with variable function', (done) => {
     let test = [0, 0, 0, 0]
 
-    let fun = _.debounce(15)
+    const fun = _.debounce(15)
 
     setTimeout(() => fun(() => test[0]++), 0)
     setTimeout(() => fun(() => test[1]++), 10)

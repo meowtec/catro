@@ -7,7 +7,6 @@ import * as path from 'path'
 import { EventEmitter } from 'events'
 import RequestHandler from './request'
 import certManager from './cert'
-import { CertManager } from './cert'
 import * as _ from './utils/utils'
 import HttpsServerPool from './https-server-pool'
 import { Headers, Request, Response } from './typed'
@@ -96,7 +95,7 @@ export default class Proxy extends EventEmitter {
   private handleRequest(scheme: string, req: http.IncomingMessage, res: http.ServerResponse) {
     LOG.info('Proxy on:request: ' + req.url)
 
-    let requestHandler: RequestHandler = new RequestHandler(scheme, req, res)
+    const requestHandler: RequestHandler = new RequestHandler(scheme, req, res)
 
     this.emit('open', requestHandler)
   }
@@ -104,15 +103,15 @@ export default class Proxy extends EventEmitter {
   private handleConnect(req: http.ServerRequest, socket: net.Socket) {
     LOG.info('Proxy on:connect: ' + req.url)
 
-    ;(async () => {
-      let hostInfo = _.parseHost(req.url)
+    ; (async () => {
+      const hostInfo = _.parseHost(req.url)
       let tcpAddr: {
         host: string
         port: number
       }
 
       if (this.options.https) {
-        let server = await this.httpsServerPool.getServer(hostInfo.host)
+        const server = await this.httpsServerPool.getServer(hostInfo.host)
 
         tcpAddr = {
           host: '127.0.0.1',
@@ -126,7 +125,7 @@ export default class Proxy extends EventEmitter {
       const hostString = tcpAddr.host + ':' + tcpAddr.port
       LOG.info('Client want connect: ' + req.url + ', will connect to: ' + hostString)
 
-      let upSocket = net.connect(tcpAddr)
+      const upSocket = net.connect(tcpAddr)
 
       upSocket.on('connect', function() {
         socket.write('HTTP/' + req.httpVersion + ' 200 OK\r\n\r\n', 'UTF-8')

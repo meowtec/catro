@@ -1,8 +1,6 @@
 'use strict'
 
 import * as assert from 'assert'
-import * as fs from 'fs'
-import * as http from 'http'
 import * as Request from 'request'
 import Proxy from '../index'
 import RequestHandler from '../request'
@@ -16,8 +14,8 @@ const localhost = '127.0.0.1'
 
 Proxy.certRoot = './cert'
 
-const HTTPServer = createHTTPServer(HTTP_PORT)
-const HTTPSServer = createHTTPSServer(SSL_PORT)
+createHTTPServer(HTTP_PORT)
+createHTTPSServer(SSL_PORT)
 
 const proxy = new Proxy({
   port: PROXY_PORT
