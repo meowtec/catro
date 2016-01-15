@@ -15,15 +15,15 @@
   "author": "Berton Zhu<bertonzh@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "minilog": "~3.0.0",
+    "minilog": "3.0.0",
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {
-    "express": "~4.13.3",
-    "mocha": "~2.3.4",
-    "request": "~2.67.0",
-    "tsd": "~0.6.5",
-    "tslint": "~3.2.0-dev.2",
-    "typescript": "~1.8.0-dev.20160106"
+    "express": "4.13.3",
+    "mocha": "2.3.4",
+    "request": "2.67.0",
+    "tsd": "0.6.5",
+    "tslint": "3.2.0-dev.2",
+    "typescript": "1.8.0-dev.20160106"
   }
 }
