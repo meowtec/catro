@@ -10,7 +10,7 @@ export interface Headers {
 export interface Request {
   method: string
   hostname: string
-  port: number
+  port: string
   path: string
   headers: Headers
   body: Readable | string | Buffer

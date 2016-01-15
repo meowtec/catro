@@ -21,7 +21,7 @@ const rejectUnauthorized = process.argv.indexOf('--production') === -1
 
 export default class RequestHandler extends EventEmitter {
 
-  scheme: string
+  protocol: string
   req: http.IncomingMessage
   res: http.ServerResponse
 
@@ -33,15 +33,15 @@ export default class RequestHandler extends EventEmitter {
 
   private willBeSent: boolean
 
-  constructor(scheme: string, req: http.IncomingMessage, res: http.ServerResponse) {
+  constructor(protocol: string, req: http.IncomingMessage, res: http.ServerResponse) {
     super()
 
-    this.scheme = scheme
+    this.protocol = protocol
     this.req = req
     this.res = res
     this.willBeSent = true
 
-    if (req.url.startsWith('/') && scheme === 'http') {
+    if (req.url.startsWith('/') && protocol === 'http') {
       return commonServ(req, res)
     }
 
@@ -54,11 +54,11 @@ export default class RequestHandler extends EventEmitter {
     const requestUrl = req.url
     const headers = req.headers
 
-    let hostname, port, path
+    let hostname: string, port: string, path: string
 
     delete headers['accept-encoding']
 
-    if (this.scheme === 'http') {
+    if (this.protocol === 'http') {
       // TODO use: ({hostname, port, path} = url.parse(requestUrl))
       const url_ = url.parse(requestUrl)
 
@@ -128,7 +128,7 @@ export default class RequestHandler extends EventEmitter {
   }
 
   private sendRequest(request: Request) {
-    const factory = this.scheme === 'https' ? https : http
+    const factory = this.protocol === 'https' ? https : http
 
     const upRequest = factory.request(Object.assign({
       rejectUnauthorized
@@ -179,6 +179,13 @@ export default class RequestHandler extends EventEmitter {
 
   public preventRequest() {
     this.willBeSent = false
+  }
+
+  public get url() {
+    const request = this.request
+    const portPart = request.port ? (':' + request.port) : ''
+
+    return this.protocol + '://' + request.hostname + portPart + request.path
   }
 
 }

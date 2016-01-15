@@ -150,4 +150,13 @@ describe('#proxy', () => {
 
   })
 
+  it('handler url', (done) => {
+    proxy.once('open', (requestHandler: RequestHandler) => {
+      assert.equal(requestHandler.url, httpServer + '/0x00')
+      done()
+    })
+
+    request(httpServer + '/0x00', (error, response, data) => {})
+  })
+
 })
