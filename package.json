@@ -1,6 +1,6 @@
 {
   "name": "catro",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "HTTP Proxy core",
   "main": "built/index.js",
   "repository": {
