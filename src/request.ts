@@ -16,8 +16,13 @@ const LOG = logger('request')
 /**
  * 如果是 production 环境，proxy 请求远程服务器时会忽略证书认证失败的情况
  */
-const rejectUnauthorized = process.argv.indexOf('--production') === -1
 
+export interface RequestHandlerOptions {
+    protocol: string
+    req: http.IncomingMessage
+    res: http.ServerResponse
+    rejectUnauthorized: boolean
+  }
 
 export default class RequestHandler extends EventEmitter {
 
@@ -32,17 +37,19 @@ export default class RequestHandler extends EventEmitter {
   response: Response
 
   private willBeSent: boolean
+  private rejectUnauthorized: boolean
 
-  constructor(protocol: string, req: http.IncomingMessage, res: http.ServerResponse) {
+  constructor(options: RequestHandlerOptions) {
     super()
 
-    this.protocol = protocol
-    this.req = req
-    this.res = res
+    this.protocol = options.protocol
+    this.req = options.req
+    this.res = options.res
+    this.rejectUnauthorized = options.rejectUnauthorized
     this.willBeSent = true
 
-    if (req.url.startsWith('/') && protocol === 'http') {
-      return commonServ(req, res)
+    if (this.req.url.startsWith('/') && this.protocol === 'http') {
+      return commonServ(this.req, this.res)
     }
 
     this.initialRequest()
@@ -131,7 +138,7 @@ export default class RequestHandler extends EventEmitter {
     const factory = this.protocol === 'https' ? https : http
 
     const upRequest = factory.request(Object.assign({
-      rejectUnauthorized
+      rejectUnauthorized: this.rejectUnauthorized
     }, request))
 
     const requestBody = request.body

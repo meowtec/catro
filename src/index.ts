@@ -19,7 +19,8 @@ export interface Options {
   port: number
 
   /** whether proxy ssl */
-  https?: { (host: string): boolean } | boolean
+  https?: { (host: string): boolean } | boolean,
+  rejectUnauthorized?: boolean
 
 }
 
@@ -92,10 +93,13 @@ export default class Proxy extends EventEmitter {
     })
   }
 
-  private handleRequest(scheme: string, req: http.IncomingMessage, res: http.ServerResponse) {
+  private handleRequest(protocol: string, req: http.IncomingMessage, res: http.ServerResponse) {
     LOG.info('Proxy on:request: ' + req.url)
 
-    const requestHandler: RequestHandler = new RequestHandler(scheme, req, res)
+    const requestHandler: RequestHandler = new RequestHandler({
+      protocol, req, res,
+      rejectUnauthorized: this.options.rejectUnauthorized
+    })
 
     this.emit('open', requestHandler)
   }

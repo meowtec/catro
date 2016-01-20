@@ -56,6 +56,9 @@ declare module "catro" {
     https?: {
         (host: string): boolean;
     } | boolean;
+
+    rejectUnauthorized?: boolean;
+
   }
 
   export default class Proxy extends EventEmitter {
