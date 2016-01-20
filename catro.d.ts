@@ -60,9 +60,13 @@ declare module "catro" {
 
   export default class Proxy extends EventEmitter {
       constructor(options: Options, callback?: (err, proxy) => any);
-      static rootCAPath: string;
       static logger: Readable;
+      /** set cert dir path */
+      static certRoot: string;
+      /** get CA cert file path */
+      static rootCAPath: string;
       promise: Promise<any>;
       httpServer: http.Server;
+      get a(): any
   }
 }
