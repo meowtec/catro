@@ -110,7 +110,8 @@ export default class Proxy extends EventEmitter {
         port: number
       }
 
-      if (this.options.https) {
+      const https = this.options.https
+      if (https === true || (https instanceof Function && https(req.url))) {
         const server = await this.httpsServerPool.getServer(hostInfo.host)
 
         tcpAddr = {
