@@ -153,7 +153,7 @@ export default class Proxy extends EventEmitter {
 
   }
 
-  static set certRoot(path: string) {
+  static set certPath(path: string) {
     certManager.setup(path)
   }
 

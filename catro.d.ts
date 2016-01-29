@@ -65,7 +65,7 @@ declare module "catro" {
       constructor(options: Options, callback?: (err, proxy) => any);
       static logger: Readable;
       /** set cert dir path */
-      static certRoot: string;
+      static certPath: string;
       /** get CA cert file path */
       static rootCAPath: string;
       promise: Promise<any>;

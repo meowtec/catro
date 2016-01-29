@@ -12,7 +12,7 @@ const SSL_PORT = 10443
 
 const localhost = '127.0.0.1'
 
-Proxy.certRoot = './cert'
+Proxy.certPath = './cert'
 
 createHTTPServer(HTTP_PORT)
 createHTTPSServer(SSL_PORT)
