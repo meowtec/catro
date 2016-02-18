@@ -22,11 +22,11 @@
   "devDependencies": {
     "babel-cli": "^6.5.1",
     "babel-preset-es2015-auto": "^1.0.1",
-    "express": "4.13.3",
-    "mocha": "2.3.4",
-    "request": "2.67.0",
-    "tsd": "0.6.5",
-    "tslint": "3.2.0-dev.2",
-    "typescript": "1.8.0-dev.20160106"
+    "express": "^4.13.4",
+    "mocha": "^2.4.5",
+    "request": "^2.69.0",
+    "tsd": "^0.6.5",
+    "tslint": "^3.3.0",
+    "typescript": "^1.8.0"
   }
 }
