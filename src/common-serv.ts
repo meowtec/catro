@@ -6,7 +6,6 @@ import certManager from './cert'
 
 export default function serv(req: http.IncomingMessage, res: http.ServerResponse): any {
   const requestUrl = req.url
-
   const urlObj = url.parse(requestUrl)
 
   if (urlObj.pathname === '/ca.crt') {

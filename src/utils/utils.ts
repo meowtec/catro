@@ -12,9 +12,9 @@ export function debounce(wait: number, fun0?: Function) {
 }
 
 export function parseHost(host: string) {
-  const tuple = host.split(':')
+  const [hostname, port] = host.split(':')
   return {
-    host: tuple[0],
-    port: parseInt(tuple[1] || '80', 10)
+    hostname: hostname,
+    port: parseInt(port || '80', 10)
   }
 }

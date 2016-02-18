@@ -116,7 +116,7 @@ export default class Proxy extends EventEmitter {
 
       const https = this.options.https
       if (https === true || (https instanceof Function && https(req.url))) {
-        const server = await this.httpsServerPool.getServer(hostInfo.host)
+        const server = await this.httpsServerPool.getServer(hostInfo.hostname)
 
         tcpAddr = {
           host: '127.0.0.1',
@@ -124,7 +124,10 @@ export default class Proxy extends EventEmitter {
         }
       }
       else {
-        tcpAddr = hostInfo
+        tcpAddr = {
+          host: hostInfo.hostname,
+          port: hostInfo.port
+        }
       }
 
       const hostString = tcpAddr.host + ':' + tcpAddr.port

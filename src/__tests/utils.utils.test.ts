@@ -37,12 +37,12 @@ describe('#utils', () => {
 
   it('should parseHost parse host', () => {
     assert.deepEqual(_.parseHost('meowtec.com:1008'), {
-      host: 'meowtec.com',
+      hostname: 'meowtec.com',
       port: 1008
     })
 
     assert.deepEqual(_.parseHost('meowtec.com'), {
-      host: 'meowtec.com',
+      hostname: 'meowtec.com',
       port: 80
     })
   })
