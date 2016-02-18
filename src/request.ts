@@ -49,7 +49,8 @@ export default class RequestHandler extends EventEmitter {
     this.willBeSent = true
 
     if (this.req.url.startsWith('/') && this.protocol === 'http') {
-      return commonServ(this.req, this.res)
+      commonServ(this.req, this.res)
+      return
     }
 
     this.initialRequest()

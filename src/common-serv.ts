@@ -18,6 +18,6 @@ export default function serv(req: http.IncomingMessage, res: http.ServerResponse
     })
   }
   else {
-    return res.end('hello myproxy.')
+    return res.end('hello meoproxy.')
   }
 }

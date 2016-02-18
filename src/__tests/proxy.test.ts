@@ -55,8 +55,18 @@ describe('#proxy', () => {
     })
   })
 
-  it('replace request headers', (done) => {
+  it('visit http://proxy:port/', (done) => {
+    Request({
+      url: 'http://' + localhost + ':' + PROXY_PORT + '/',
+      method: 'GET'
+    }, (error, response, data) => {
+      assert.equal(data, 'hello meoproxy.')
+      done()
+    })
+  })
 
+
+  it('replace request headers', (done) => {
     proxy.once('open', (requestHandler: RequestHandler) => {
       requestHandler.replaceRequest = (request) => {
         return Object.assign({}, request, {
@@ -72,11 +82,9 @@ describe('#proxy', () => {
       assert.equal(json.headers['x-request'], 'request-replace-x')
       done()
     })
-
   })
 
   it('replace request body and method', (done) => {
-
     proxy.once('open', (requestHandler: RequestHandler) => {
       requestHandler.replaceRequest = (request) => {
         return Object.assign({}, request, {
@@ -91,12 +99,10 @@ describe('#proxy', () => {
       assert.equal(json.body, 'replaced.')
       done()
     })
-
   })
 
 
   it('replace response status and headers', (done) => {
-
     proxy.once('open', (requestHandler: RequestHandler) => {
       requestHandler.replaceResponse = (response) => {
         return Object.assign({}, response, {
@@ -113,11 +119,9 @@ describe('#proxy', () => {
       assert.equal(response.headers['x-replace'], 'y')
       done()
     })
-
   })
 
   it('replace response body', (done) => {
-
     proxy.once('open', (requestHandler: RequestHandler) => {
       requestHandler.replaceResponse = (response) => {
         return Object.assign({}, response, {
@@ -130,7 +134,6 @@ describe('#proxy', () => {
       assert.equal(data, '123456')
       done()
     })
-
   })
 
   it('handler events', (done) => {
@@ -147,7 +150,6 @@ describe('#proxy', () => {
     })
 
     request(httpServer + '/0x00', (error, response, data) => {})
-
   })
 
   it('handler url', (done) => {
