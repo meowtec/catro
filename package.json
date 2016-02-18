@@ -8,6 +8,7 @@
     "url": "https://github.com/meowtec/catro"
   },
   "scripts": {
+    "tsdi": "tsd install",
     "lint": "tslint src/*.ts src/**/*.ts",
     "build": "rm -rf built && tsc -p .",
     "test": "npm run build && cp -r src/__tests/resources ./built/__tests/ && mocha built/__tests"
