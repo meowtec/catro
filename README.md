@@ -17,7 +17,7 @@ node -v
 
 Install dependences.
 ```
-npm install
+npm run i
 ```
 
 Run test cases.
