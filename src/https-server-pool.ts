@@ -36,9 +36,7 @@ export default class Pool extends EventEmitter {
     const timeout = _.debounce(600000)
 
     newServer.on('timeoff', () => {
-      timeout(function() {
-        newServer.close()
-      })
+      timeout(() => newServer.close())
     })
 
     newServer.emit('timeoff')

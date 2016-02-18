@@ -5,10 +5,9 @@ import * as url from 'url'
 import certManager from './cert'
 
 export default function serv(req: http.IncomingMessage, res: http.ServerResponse): any {
-  const requestUrl = req.url
-  const urlObj = url.parse(requestUrl)
+  const { pathname } = url.parse(req.url)
 
-  if (urlObj.pathname === '/ca.crt') {
+  if (pathname === '/ca.crt') {
     return certManager.getCerts('rootca').then((cert) => {
       res.writeHead(200, {
         'Content-Type': 'application/x-x509-ca-cert'
