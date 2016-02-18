@@ -113,8 +113,8 @@ export class CertManager {
     const key = await fs.readFile(`${this.rootPath}/${domain}.key`)
     const cert = await fs.readFile(`${this.rootPath}/${domain}.crt`)
     return {
-      key: key,
-      cert: cert
+      key,
+      cert
     }
   }
 

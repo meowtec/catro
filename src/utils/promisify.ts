@@ -2,26 +2,7 @@
 
 import  * as fileSystem from 'fs'
 import { EventEmitter } from 'events'
-/**
-nodejs 目前还不支持 rest 参数，TypeScript 也不支持可选编译
-// TODO use:
-export default function promisify(callback: Function, context?) {
-  return (...args) => {
-    return new Promise((resolve, reject) => {
-      args.push((err, ...args) => {
-        if (err) {
-          reject(err)
-        }
-        else {
-          resolve.apply(args)
-        }
-      })
-      callback.apply(context, args)
-    })
-  }
-}
-*/
-;
+
 
 export default function promisify(callback: Function, context?, ifErr?: boolean) {
 
@@ -29,14 +10,12 @@ export default function promisify(callback: Function, context?, ifErr?: boolean)
     ifErr = true
   }
 
-  return function(arg1?, arg2?) {
-    const args = [].slice.call(arguments)
-
+  return (...args) => {
     return new Promise((resolve, reject) => {
-      args.push(function(err) {
-        let rest = arguments
+      args.push((...rest) => {
+        let err
         if (ifErr) {
-          rest = [].slice.call(rest, 1)
+          err = rest.shift()
         }
 
         if (err && ifErr) {
@@ -52,13 +31,8 @@ export default function promisify(callback: Function, context?, ifErr?: boolean)
 }
 
 
-export const emitterPromisify = function(emitter: EventEmitter, eventName: string, exception?: boolean) {
-  // TODO: use `exception: boolean = true`
-  if (exception == null) {
-    exception = true
-  }
-
-  return new Promise(function(resolve, reject) {
+export const emitterPromisify = function(emitter: EventEmitter, eventName: string, exception = true) {
+  return new Promise((resolve, reject) => {
     emitter.on(eventName, resolve)
     exception && emitter.on('error', reject)
   })

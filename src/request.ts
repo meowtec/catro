@@ -67,18 +67,10 @@ export default class RequestHandler extends EventEmitter {
     delete headers['accept-encoding']
 
     if (this.protocol === 'http') {
-      // TODO use: ({hostname, port, path} = url.parse(requestUrl))
-      const url_ = url.parse(requestUrl)
-
-      hostname = url_.hostname
-      port = url_.port
-      path = url_.path
+      ({ hostname, port, path } = url.parse(requestUrl))
     }
     else {
-      // TODO use: [hostname, port] = headers['host'].split(':')
-      const host = headers['host'].split(':')
-      hostname = host[0]
-      port = host[1]
+      [hostname, port] = headers['host'].split(':')
       path = req.url
     }
 
@@ -180,7 +172,7 @@ export default class RequestHandler extends EventEmitter {
     LOG.error(error)
   }
 
-  private returnError(code: number) {
+  private returnError(code = 500) {
     this.res.writeHead(code, {'Content-Type': 'text/html'})
     this.res.end(resources.get(code + '.html'))
   }
