@@ -8,10 +8,8 @@ import * as logger from 'minilog'
 const LOG = logger('cert')
 
 /** return Error */
-const spawnError = (childProcess, err) => {
-  const error = new Error('Spawn error:\n' + childProcess.spawnargs.join(' '))
-  error.name = 'SpawnError'
-  error.message = err.message
+const spawnError = (childProcess, errMsg) => {
+  const error = new Error('SpawnError:\n' + childProcess.spawnargs.join(' ') + '\n' + errMsg)
   return error
 }
 
@@ -19,9 +17,13 @@ const spawnError = (childProcess, err) => {
 const promisifyChildProcess = (childProcess: ChildProcess) => {
   return new Promise((resolve, reject) => {
     // childProcess.stderr.pipe(process.stdout)
+    let errMsg = ''
+    childProcess.stderr.on('data', (data) => {
+      errMsg += data
+    })
 
     childProcess.on('close', (err) => {
-      err ? reject(spawnError(childProcess, err)) : resolve()
+      err ? reject(spawnError(childProcess, errMsg)) : resolve()
     })
   })
 }

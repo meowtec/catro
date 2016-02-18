@@ -21,7 +21,6 @@ export interface Options {
   /** whether proxy ssl */
   https?: { (host: string): boolean } | boolean,
   rejectUnauthorized?: boolean
-
 }
 
 
@@ -151,7 +150,7 @@ export default class Proxy extends EventEmitter {
       })
     })()
     .catch((error) => {
-      LOG.error('HandleConnect error: ', error)
+      LOG.error('HandleConnect error: ', error.toString())
     })
 
   }
