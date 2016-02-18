@@ -10,7 +10,7 @@
   "scripts": {
     "tsdi": "tsd install",
     "lint": "tslint src/*.ts src/**/*.ts",
-    "build": "rm -rf built && tsc -p .",
+    "build": "rm -rf built && tsc -p . && PRESET_NODE_VERSION='> 4.0' babel built --out-dir built --presets es2015-auto",
     "test": "npm run build && cp -r src/__tests/resources ./built/__tests/ && mocha built/__tests"
   },
   "author": "Berton Zhu<bertonzh@gmail.com>",
@@ -20,6 +20,8 @@
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.5.1",
+    "babel-preset-es2015-auto": "^1.0.1",
     "express": "4.13.3",
     "mocha": "2.3.4",
     "request": "2.67.0",
