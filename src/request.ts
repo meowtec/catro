@@ -135,7 +135,7 @@ export default class RequestHandler extends EventEmitter {
     }, request))
 
     const requestBody = request.body
-    if (typeof requestBody === 'string' || Buffer.isBuffer(requestBody)) {
+    if (requestBody == null || typeof requestBody === 'string' || Buffer.isBuffer(requestBody)) {
       upRequest.end(requestBody)
     }
     else {
@@ -156,7 +156,7 @@ export default class RequestHandler extends EventEmitter {
     res.writeHead(response.status, response.headers)
 
     const responseBody = response.body
-    if (typeof responseBody === 'string' || Buffer.isBuffer(responseBody)) {
+    if (responseBody == null || typeof responseBody === 'string' || Buffer.isBuffer(responseBody)) {
       res.end(responseBody)
     }
     else {
