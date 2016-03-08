@@ -65,6 +65,7 @@ export default class RequestHandler extends EventEmitter {
     let hostname: string, port: string, path: string
 
     delete headers['accept-encoding']
+    delete headers['host']
 
     if (this.protocol === 'http') {
       ({ hostname, port, path } = url.parse(requestUrl))
