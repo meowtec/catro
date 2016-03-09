@@ -159,8 +159,8 @@ export default class Proxy extends EventEmitter {
 
   }
 
-  get rootCAPath() {
-    return this.certManager.rootCAPath
+  get CACertPath() {
+    return this.certManager.CACertPath
   }
 }
 

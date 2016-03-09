@@ -5,7 +5,6 @@ import { EventEmitter } from 'events'
 
 
 export default function promisify(callback: Function, context?, ifErr?: boolean) {
-
   if (ifErr == null) {
     ifErr = true
   }

@@ -2,8 +2,10 @@
 
 import * as mkdirp from 'mkdirp'
 import { spawn, ChildProcess } from 'child_process'
-import { fs } from './utils/promisify'
+import { fs as fsys } from './utils/promisify'
 import * as logger from 'minilog'
+import * as fs from 'fs'
+import * as path from 'path'
 
 const LOG = logger('cert')
 
@@ -50,15 +52,36 @@ export default class CertManager {
     await this.initCA()
   }
 
-  get rootCAPath() {
-    return this.rootPath + '/rootca.key'
+  get CAKeyPath() {
+    return this.fullPath('@rootca.key')
+  }
+
+  get CACertPath() {
+    return this.fullPath('@rootca.crt')
+  }
+
+  private fullPath(name) {
+    return path.resolve(this.rootPath, name)
+  }
+
+  private keyPath(name) {
+    return this.fullPath(name + '.key')
+  }
+
+  private certPath(name) {
+    return this.fullPath(name + '.crt')
+  }
+
+  private customCA(ca: KeyCertPair) {
+    fs.writeFileSync(this.CAKeyPath, ca.key)
+    fs.writeFileSync(this.CACertPath, ca.cert)
   }
 
   // 生成 CA 根证书
   private genCAKey() {
     return spawn('openssl', [
       'genrsa',
-      '-out', this.rootPath + '/rootca.key',
+      '-out', this.CAKeyPath,
       '2048'
     ])
   }
@@ -69,8 +92,8 @@ export default class CertManager {
       'req',
       '-new', '-x509', '-sha256',
       '-days', '9999',
-      '-key', this.rootPath + '/rootca.key',
-      '-out', this.rootPath + '/rootca.crt',
+      '-key', this.CAKeyPath,
+      '-out', this.CACertPath,
       '-subj', '/C=CN/ST=Zhejiang/L=Hangzhou/O=Meowtec/OU=Meowtec/CN=MeowtecCA/emailAddress=bertonzh@gmail.com'
     ])
   }
@@ -78,7 +101,7 @@ export default class CertManager {
   private genKey(domain: string) {
     return spawn('openssl', [
       'genrsa',
-      '-out', `${this.rootPath}/${domain}.key`,
+      '-out', this.keyPath(domain),
       '2048'
     ])
   }
@@ -87,8 +110,8 @@ export default class CertManager {
     return spawn('openssl', [
       'req',
       '-new',
-      '-key', `${this.rootPath}/${domain}.key`,
-      '-out', `${this.rootPath}/${domain}.csr`,
+      '-key', this.keyPath(domain),
+      '-out', this.fullPath(domain + '.csr'),
       '-subj', `/C=CN/ST=Zhejiang/L=Hangzhou/O=Meowtec/OU=Meowtec/CN=${domain}/emailAddress=bertonzh@gmail.com`
     ])
   }
@@ -99,25 +122,25 @@ export default class CertManager {
       '-req',
       '-days', '9999',
       '-sha256',
-      '-in', `${this.rootPath}/${domain}.csr`,
-      '-CA', `${this.rootPath}/rootca.crt`,
-      '-CAkey', `${this.rootPath}/rootca.key`,
+      '-in', this.fullPath(domain + '.csr'),
+      '-CA', this.CACertPath,
+      '-CAkey', this.CAKeyPath,
       '-CAcreateserial',
-      '-out', `${this.rootPath}/${domain}.crt`
+      '-out', this.certPath(domain)
     ])
   }
 
   async readCerts (domain: string) {
-    const key = await fs.readFile(`${this.rootPath}/${domain}.key`)
-    const cert = await fs.readFile(`${this.rootPath}/${domain}.crt`)
+    const key = await fsys.readFile(this.keyPath(domain))
+    const cert = await fsys.readFile(this.certPath(domain))
     return {
       key,
       cert
     }
   }
 
-  rootCAExist() {
-    return fs.exists(this.rootPath + '/rootca.key')
+  CAExist() {
+    return fsys.exists(this.CAKeyPath)
   }
 
   async getCerts(domain: string) {
@@ -132,7 +155,7 @@ export default class CertManager {
       await promisifyChildProcess(this.genKey(domain))
       await promisifyChildProcess(this.genReq(domain))
       await promisifyChildProcess(this.genCert(domain))
-      await fs.unlink(this.rootPath + `/${domain}.csr`)
+      await fsys.unlink(this.fullPath(domain + '.csr'))
       certs = await this.readCerts(domain)
       LOG.info('CertPair Create: ' + domain)
     }
@@ -141,11 +164,11 @@ export default class CertManager {
   }
 
   private async initCA() {
-    const isRootCAExist = await this.rootCAExist()
-    if (!isRootCAExist) {
+    const isCAExist = await this.CAExist()
+    if (!isCAExist) {
       await promisifyChildProcess(this.genCAKey())
       await promisifyChildProcess(this.genCACert())
-      LOG.info('Root CA has been created! at: ' + this.rootPath + '/rootca.key')
+      LOG.info('Root CA has been created! at: ' + this.CACertPath)
     }
   }
 
