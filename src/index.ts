@@ -6,7 +6,7 @@ import * as https from 'https'
 import * as path from 'path'
 import { EventEmitter } from 'events'
 import RequestHandler from './request'
-import certManager from './cert'
+import CertManager from './cert'
 import * as _ from './utils/utils'
 import HttpsServerPool from './https-server-pool'
 import { Headers, Request, Response } from './typed'
@@ -17,6 +17,8 @@ const LOG = logger('index')
 export interface Options {
   /** proxy port */
   port: number
+
+  certPath: string
 
   /** whether proxy ssl */
   https?: { (host: string): boolean } | boolean,
@@ -34,6 +36,8 @@ export default class Proxy extends EventEmitter {
 
   private initialPromise: Promise<any>;
 
+  private certManager = new CertManager()
+
   constructor(options: Options, callback?: (err, proxy) => any) {
     super()
 
@@ -45,8 +49,8 @@ export default class Proxy extends EventEmitter {
    * Any error on start can be catched here.
    */
   private async start() {
-    if (!certManager.setted) {
-      certManager.setup(path.resolve(__dirname, './cert'))
+    if (!this.certManager.setted) {
+      this.certManager.setup(this.options.certPath)
     }
 
     await this.initialMainServer()
@@ -78,7 +82,9 @@ export default class Proxy extends EventEmitter {
   }
 
   private initialHttpsServers() {
-    this.httpsServerPool = new HttpsServerPool()
+    this.httpsServerPool = new HttpsServerPool({
+      certManager: this.certManager
+    })
 
     this.httpsServerPool.on('new', (server: https.Server, domain) => {
       const port = server.address().port
@@ -97,7 +103,8 @@ export default class Proxy extends EventEmitter {
 
     const requestHandler: RequestHandler = new RequestHandler({
       protocol, req, res,
-      rejectUnauthorized: this.options.rejectUnauthorized
+      rejectUnauthorized: this.options.rejectUnauthorized,
+      certManager: this.certManager
     })
 
     this.emit('open', requestHandler)
@@ -155,12 +162,8 @@ export default class Proxy extends EventEmitter {
 
   }
 
-  static set certPath(path: string) {
-    certManager.setup(path)
-  }
-
-  static get rootCAPath() {
-    return certManager.rootCAPath
+  get rootCAPath() {
+    return this.certManager.rootCAPath
   }
 
   static get logger() {
@@ -180,4 +183,5 @@ export {
   Headers, Request, Response
 }
 
-export interface RequestHandler extends RequestHandler {}
+// export interface RequestHandler extends RequestHandler {}
+export type RequestHandler = RequestHandler

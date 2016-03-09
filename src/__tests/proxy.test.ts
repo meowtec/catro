@@ -3,8 +3,8 @@
 import * as path from 'path'
 import * as assert from 'assert'
 import * as Request from 'request'
-import Proxy from '../index'
-import RequestHandler from '../request'
+import Proxy, { RequestHandler } from '../index'
+
 import { createHTTPServer, createHTTPSServer } from './server/server'
 
 const PROXY_PORT = 10069
@@ -13,15 +13,14 @@ const SSL_PORT = 10443
 
 const localhost = '127.0.0.1'
 
-Proxy.certPath = path.resolve(__dirname, './cert')
-
 createHTTPServer(HTTP_PORT)
 createHTTPSServer(SSL_PORT)
 
 const proxy = new Proxy({
   port: PROXY_PORT,
   https: true,
-  rejectUnauthorized: false
+  rejectUnauthorized: false,
+  certPath: path.resolve(__dirname, './cert')
 })
 
 const request = Request.defaults({

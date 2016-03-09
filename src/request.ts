@@ -4,8 +4,7 @@ import * as url from 'url'
 import * as http from 'http'
 import * as https from 'https'
 import { EventEmitter } from 'events'
-
-import commonServ from './common-serv'
+import CertManager from './cert'
 import * as resources from './res'
 import { Request, Response } from './typed'
 import { emitterPromisify } from './utils/promisify'
@@ -22,6 +21,7 @@ export interface RequestHandlerOptions {
     req: http.IncomingMessage
     res: http.ServerResponse
     rejectUnauthorized: boolean
+    certManager: CertManager
   }
 
 export default class RequestHandler extends EventEmitter {
@@ -38,6 +38,7 @@ export default class RequestHandler extends EventEmitter {
 
   private willBeSent: boolean
   private rejectUnauthorized: boolean
+  private certManager: CertManager
 
   constructor(options: RequestHandlerOptions) {
     super()
@@ -46,15 +47,20 @@ export default class RequestHandler extends EventEmitter {
     this.req = options.req
     this.res = options.res
     this.rejectUnauthorized = options.rejectUnauthorized
+    this.certManager = options.certManager
     this.willBeSent = true
 
     if (this.req.url.startsWith('/') && this.protocol === 'http') {
-      commonServ(this.req, this.res)
+      this.serv(this.req, this.res)
       return
     }
 
     this.initialRequest()
     setTimeout(() => this.start().catch(this.handleError.bind(this)))
+  }
+
+  private serv(req: http.IncomingMessage, res: http.ServerResponse) {
+    res.end('hello meoproxy.')
   }
 
   private initialRequest() {

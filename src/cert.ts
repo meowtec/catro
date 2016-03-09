@@ -33,7 +33,7 @@ export interface KeyCertPair {
   cert: Buffer
 }
 
-export class CertManager {
+export default class CertManager {
 
   rootPath: string
   _setted: boolean
@@ -154,5 +154,3 @@ export class CertManager {
   }
 
 }
-
-export default new CertManager()
