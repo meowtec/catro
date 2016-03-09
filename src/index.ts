@@ -28,36 +28,33 @@ export interface Options {
 
 export default class Proxy extends EventEmitter {
 
-  httpServer: http.Server;
+  httpServer = http.createServer();
 
   private options: Options;
 
   private httpsServerPool: HttpsServerPool;
 
-  private initialPromise: Promise<any>;
+  private certManager: CertManager;
 
-  private certManager = new CertManager()
-
-  constructor(options: Options, callback?: (err, proxy) => any) {
+  constructor(options: Options) {
     super()
 
     this.options = options
-    this.initialPromise = this.start()
+    this.certManager = new CertManager({
+      rootPath: options.certPath
+    })
   }
 
   /**
    * Any error on start can be catched here.
    */
-  private async start() {
-    if (!this.certManager.setted) {
-      this.certManager.setup(this.options.certPath)
-    }
-
-    await this.initialMainServer()
-    await this.initialHttpsServers()
+  public async start() {
+    await this.certManager.init()
+    await this.initMainServer()
+    await this.initHttpsServers()
   }
 
-  private initialMainServer() {
+  private initMainServer() {
     return new Promise((resolve, reject) => {
       const proxy = http.createServer()
 
@@ -81,7 +78,7 @@ export default class Proxy extends EventEmitter {
     })
   }
 
-  private initialHttpsServers() {
+  private initHttpsServers() {
     this.httpsServerPool = new HttpsServerPool({
       certManager: this.certManager
     })
@@ -165,15 +162,6 @@ export default class Proxy extends EventEmitter {
   get rootCAPath() {
     return this.certManager.rootCAPath
   }
-
-  static get logger() {
-    return logger
-  }
-
-  get promise() {
-    return this.initialPromise
-  }
-
 }
 
 /**

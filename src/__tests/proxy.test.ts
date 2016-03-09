@@ -173,5 +173,10 @@ function describeGenerate(https: boolean) {
   }
 }
 
+describe('#proxy:start', () => {
+  it('proxy start', (done) => {
+    proxy.start().then(done, done)
+  })
+})
 describe('#proxy:HTTP', describeGenerate(false))
 describe('#proxy:HTTPS', describeGenerate(true))

@@ -28,6 +28,10 @@ const promisifyChildProcess = (childProcess: ChildProcess) => {
   })
 }
 
+export interface CertManagerOptions {
+  rootPath: string
+}
+
 export interface KeyCertPair {
   key: Buffer
   cert: Buffer
@@ -36,22 +40,14 @@ export interface KeyCertPair {
 export default class CertManager {
 
   rootPath: string
-  _setted: boolean
 
-  constructor() {
-    this._setted = false
+  constructor(options: CertManagerOptions) {
+    this.rootPath = options.rootPath
   }
 
-  setup(rootPath) {
-    this.rootPath = rootPath
-    mkdirp.sync(rootPath)
-    this.initCA()
-
-    this._setted = true
-  }
-
-  get setted() {
-    return this._setted
+  public async init() {
+    mkdirp.sync(this.rootPath)
+    await this.initCA()
   }
 
   get rootCAPath() {
