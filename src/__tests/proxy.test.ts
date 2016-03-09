@@ -23,6 +23,8 @@ const proxy = new Proxy({
   certPath: path.resolve(__dirname, './cert')
 })
 
+proxy.on('log:info', console.log)
+
 const request = Request.defaults({
   strictSSL: false,
   // ca: fs.readFileSync(Proxy.rootCAPath),

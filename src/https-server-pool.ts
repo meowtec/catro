@@ -5,9 +5,11 @@ import * as _ from './utils/utils'
 import CertManager from './cert'
 import { emitterPromisify } from './utils/promisify'
 import { EventEmitter } from 'events'
+import { Logger } from './typed'
 
 export interface PoolOptions {
   certManager: CertManager
+  logger: Logger
 }
 
 export default class Pool extends EventEmitter {

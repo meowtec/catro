@@ -3,11 +3,9 @@
 import * as mkdirp from 'mkdirp'
 import { spawn, ChildProcess } from 'child_process'
 import { fs as fsys } from './utils/promisify'
-import * as logger from 'minilog'
 import * as fs from 'fs'
 import * as path from 'path'
-
-const LOG = logger('cert')
+import { Logger } from './typed'
 
 /** return Error */
 const spawnError = (childProcess, errMsg) => {
@@ -32,6 +30,7 @@ const promisifyChildProcess = (childProcess: ChildProcess) => {
 
 export interface CertManagerOptions {
   rootPath: string
+  logger: Logger
 }
 
 export interface KeyCertPair {
@@ -42,9 +41,11 @@ export interface KeyCertPair {
 export default class CertManager {
 
   rootPath: string
+  logger: Logger
 
   constructor(options: CertManagerOptions) {
     this.rootPath = options.rootPath
+    this.logger = options.logger
   }
 
   public async init() {
@@ -157,7 +158,7 @@ export default class CertManager {
       await promisifyChildProcess(this.genCert(domain))
       await fsys.unlink(this.fullPath(domain + '.csr'))
       certs = await this.readCerts(domain)
-      LOG.info('CertPair Create: ' + domain)
+      this.logger.info('CertPair Create: ' + domain)
     }
 
     return certs
@@ -168,7 +169,7 @@ export default class CertManager {
     if (!isCAExist) {
       await promisifyChildProcess(this.genCAKey())
       await promisifyChildProcess(this.genCACert())
-      LOG.info('Root CA has been created! at: ' + this.CACertPath)
+      this.logger.info('Root CA has been created! at: ' + this.CACertPath)
     }
   }
 
