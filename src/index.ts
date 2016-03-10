@@ -5,7 +5,7 @@ import * as http from 'http'
 import * as https from 'https'
 import { EventEmitter } from 'events'
 import RequestHandler from './request'
-import CertManager from './utils/cert'
+import CertManager, { KeyCertPair } from './utils/cert'
 import * as _ from './utils/utils'
 import HttpsServerPool from './https-server-pool'
 import { Headers, Request, Response } from './typed'
@@ -16,6 +16,7 @@ export interface Options {
   certPath: string
   https?: { (host: string): boolean } | boolean
   rejectUnauthorized?: boolean
+  ca?: KeyCertPair
 }
 
 export default class Proxy extends EventEmitter {
@@ -38,7 +39,8 @@ export default class Proxy extends EventEmitter {
     this.options = options
     this.certManager = new CertManager({
       rootPath: options.certPath,
-      logger: this.creatLogger('cert')
+      logger: this.creatLogger('cert'),
+      customCA: options.ca
     })
   }
 

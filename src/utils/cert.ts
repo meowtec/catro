@@ -28,24 +28,27 @@ const promisifyChildProcess = (childProcess: ChildProcess) => {
   })
 }
 
-export interface CertManagerOptions {
-  rootPath: string
-  logger: Logger
-}
-
 export interface KeyCertPair {
   key: Buffer
   cert: Buffer
+}
+
+export interface CertManagerOptions {
+  rootPath: string
+  logger: Logger
+  customCA?: KeyCertPair
 }
 
 export default class CertManager {
 
   rootPath: string
   logger: Logger
+  customCA: KeyCertPair
 
   constructor(options: CertManagerOptions) {
     this.rootPath = options.rootPath
     this.logger = options.logger
+    this.customCA = options.customCA
   }
 
   public async init() {
@@ -73,7 +76,7 @@ export default class CertManager {
     return this.fullPath(name + '.crt')
   }
 
-  private customCA(ca: KeyCertPair) {
+  private setCustomCA(ca: KeyCertPair) {
     fs.writeFileSync(this.CAKeyPath, ca.key)
     fs.writeFileSync(this.CACertPath, ca.cert)
   }
@@ -165,6 +168,12 @@ export default class CertManager {
   }
 
   private async initCA() {
+    if (this.customCA) {
+      this.setCustomCA(this.customCA)
+      this.logger.info('Use custom Root CA. copy to: ' + this.CACertPath)
+      return
+    }
+
     const isCAExist = await this.CAExist()
     if (!isCAExist) {
       await promisifyChildProcess(this.genCAKey())
