@@ -29,4 +29,3 @@ describe('#proxy:start', () => {
     }, done)
   })
 })
-

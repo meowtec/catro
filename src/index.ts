@@ -51,6 +51,8 @@ export default class Proxy extends EventEmitter {
     await this.certManager.init()
     await this.initMainServer()
     await this.initHttpsServers()
+
+    return this
   }
 
   private initMainServer() {
