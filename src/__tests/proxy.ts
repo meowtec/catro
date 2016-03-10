@@ -3,8 +3,10 @@
 import * as path from 'path'
 import * as assert from 'assert'
 import * as Request from 'request'
-import Proxy from '../index'
-import RequestHandler from '../request'
+import * as resources from '../utils/res'
+import Proxy, { RequestHandler } from '../index'
+import { IncomingMessage, ServerResponse } from 'http'
+
 import { createHTTPServer, createHTTPSServer } from './server/server'
 
 const PROXY_PORT = 10069
@@ -13,16 +15,19 @@ const SSL_PORT = 10443
 
 const localhost = '127.0.0.1'
 
-Proxy.certPath = path.resolve(__dirname, './cert')
-
 createHTTPServer(HTTP_PORT)
 createHTTPSServer(SSL_PORT)
 
 const proxy = new Proxy({
   port: PROXY_PORT,
   https: true,
-  rejectUnauthorized: false
+  rejectUnauthorized: false,
+  certPath: path.resolve(__dirname, './cert')
 })
+
+proxy.on('log:info', console.log)
+proxy.on('log:warn', console.warn)
+proxy.on('error', console.error)
 
 const request = Request.defaults({
   strictSSL: false,
@@ -75,10 +80,24 @@ function describeGenerate(https: boolean) {
         url: 'http://' + localhost + ':' + PROXY_PORT + '/',
         method: 'GET'
       }, RequestCallbackWrap((error, response, data) => {
-        assert.equal(data, 'hello meoproxy.')
+        assert.equal(data, resources.get('hello.html'))
       }, done))
     })
 
+    it('visit http://proxy:port/ then prevent default response.', (done) => {
+      const text = 'some text.'
+      proxy.once('direct', (req: IncomingMessage, res: ServerResponse, prevent: Function) => {
+        prevent()
+        res.write(text)
+        res.end()
+      })
+      Request({
+        url: 'http://' + localhost + ':' + PROXY_PORT + '/',
+        method: 'GET'
+      }, RequestCallbackWrap((error, response, data) => {
+        assert.equal(data, text)
+      }, done))
+    })
 
     it('replace request headers', (done) => {
       proxy.once('open', (requestHandler: RequestHandler) => {
@@ -174,5 +193,10 @@ function describeGenerate(https: boolean) {
   }
 }
 
+describe('#proxy:start', () => {
+  it('proxy start', (done) => {
+    proxy.start().then((x) => done(), done)
+  })
+})
 describe('#proxy:HTTP', describeGenerate(false))
 describe('#proxy:HTTPS', describeGenerate(true))

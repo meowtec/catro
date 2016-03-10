@@ -2,9 +2,10 @@
 
 import * as fs from 'fs'
 import * as path from 'path'
+const pkg  = require('../../package.json')
 
 const cache = {}
-const resdir = '../resources/html'
+const resdir = '../../resources/html'
 
 export function get(filename: string): string {
   let content = cache[filename]
@@ -13,5 +14,6 @@ export function get(filename: string): string {
 
     cache[filename] = content
   }
-  return content
+
+  return content.replace(/\{version\}/, pkg.version)
 }

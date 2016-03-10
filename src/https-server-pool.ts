@@ -2,17 +2,25 @@
 
 import * as https from 'https'
 import * as _ from './utils/utils'
-import certManager from './cert'
+import CertManager from './utils/cert'
 import { emitterPromisify } from './utils/promisify'
 import { EventEmitter } from 'events'
+import { Logger } from './typed'
+
+export interface PoolOptions {
+  certManager: CertManager
+  logger: Logger
+}
 
 export default class Pool extends EventEmitter {
-  serverMap: Map<string, https.Server>
+  private serverMap: Map<string, https.Server>
+  private certManager: CertManager
 
-  constructor() {
+  constructor(options: PoolOptions) {
     super()
 
     this.serverMap = new Map()
+    this.certManager = options.certManager
   }
 
   async getServer(domain: string) {
@@ -22,7 +30,7 @@ export default class Pool extends EventEmitter {
       return cache
     }
 
-    const certData = await certManager.getCerts(domain)
+    const certData = await this.certManager.getCerts(domain)
     const newServer = https.createServer(certData)
 
     /**

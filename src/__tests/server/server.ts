@@ -4,13 +4,11 @@ import * as https from 'https'
 import * as http from 'http'
 import * as fs from 'fs'
 import * as express from 'express'
-import * as minilog from 'minilog'
-import { resource, radeStreamAll } from '../utils/'
+import { resource, radeStreamAll, createLogger } from '../utils/'
 
 const certPath = (filename) => resource('cert-server/' + filename)
 
-const log = minilog('Test:server')
-minilog.enable()
+const log = createLogger('Test:server')
 
 const app = express()
 
@@ -35,7 +33,6 @@ app.all('/0x02', function(req, res) {
   })
 
 })
-
 
 export function createHTTPServer(port) {
   return http.createServer(app).listen(port, () => {

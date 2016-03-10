@@ -11,12 +11,12 @@
     "i": "npm install && tsd install",
     "lint": "tslint ./src/*.ts* ./src/**/*.ts* ./src/**/**/*.ts* ./src/**/**/*.ts*",
     "build": "rm -rf built && tsc -p . && PRESET_NODE_VERSION='> 4.0' babel built --out-dir built --presets es2015-auto",
-    "test": "npm run build && cp -r src/__tests/resources ./built/__tests/ && mocha built/__tests"
+    "test": "npm run lint && npm run build && cp -r src/__tests/resources ./built/__tests/ && mocha built/__tests"
   },
   "author": "Berton Zhu<bertonzh@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "minilog": "3.0.0",
+    "colors": "^1.1.2",
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {

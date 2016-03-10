@@ -21,3 +21,13 @@ export interface Response {
   headers: Headers
   body: Readable | string | Buffer
 }
+
+export interface Logger {
+  info(...args)
+  error(...args)
+  warn(...args)
+}
+
+export interface LoggerFactory {
+  (name: string): Logger
+}

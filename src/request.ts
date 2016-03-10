@@ -4,25 +4,19 @@ import * as url from 'url'
 import * as http from 'http'
 import * as https from 'https'
 import { EventEmitter } from 'events'
-
-import commonServ from './common-serv'
-import * as resources from './res'
-import { Request, Response } from './typed'
+import CertManager from './utils/cert'
+import * as resources from './utils/res'
+import { Request, Response, Logger } from './typed'
 import { emitterPromisify } from './utils/promisify'
-import * as logger from 'minilog'
-
-const LOG = logger('request')
-
-/**
- * 如果是 production 环境，proxy 请求远程服务器时会忽略证书认证失败的情况
- */
 
 export interface RequestHandlerOptions {
-    protocol: string
-    req: http.IncomingMessage
-    res: http.ServerResponse
-    rejectUnauthorized: boolean
-  }
+  protocol: string
+  req: http.IncomingMessage
+  res: http.ServerResponse
+  rejectUnauthorized: boolean
+  certManager: CertManager
+  logger: Logger
+}
 
 export default class RequestHandler extends EventEmitter {
 
@@ -38,6 +32,8 @@ export default class RequestHandler extends EventEmitter {
 
   private willBeSent: boolean
   private rejectUnauthorized: boolean
+  private certManager: CertManager
+  private logger: Logger
 
   constructor(options: RequestHandlerOptions) {
     super()
@@ -46,18 +42,15 @@ export default class RequestHandler extends EventEmitter {
     this.req = options.req
     this.res = options.res
     this.rejectUnauthorized = options.rejectUnauthorized
+    this.certManager = options.certManager
+    this.logger = options.logger
     this.willBeSent = true
 
-    if (this.req.url.startsWith('/') && this.protocol === 'http') {
-      commonServ(this.req, this.res)
-      return
-    }
-
-    this.initialRequest()
+    this.initRequest()
     setTimeout(() => this.start().catch(this.handleError.bind(this)))
   }
 
-  private initialRequest() {
+  private initRequest() {
     const req = this.req
     const requestUrl = req.url
     const headers = req.headers
@@ -103,7 +96,7 @@ export default class RequestHandler extends EventEmitter {
 
     const httpResponse = await this.sendRequest(requestOptions)
 
-    this.initialResponse(httpResponse)
+    this.initResponse(httpResponse)
 
     this.emit('response', this.response)
 
@@ -120,7 +113,7 @@ export default class RequestHandler extends EventEmitter {
     this.emit('finish')
   }
 
-  private initialResponse(response: http.IncomingMessage) {
+  private initResponse(response: http.IncomingMessage) {
     this.response = {
       status: response.statusCode,
       headers: response.headers,
@@ -170,7 +163,7 @@ export default class RequestHandler extends EventEmitter {
   private handleError(error) {
     this.returnError(502)
     this.emit('error', error)
-    LOG.error(error)
+    this.logger.error(error)
   }
 
   private returnError(code = 500) {
