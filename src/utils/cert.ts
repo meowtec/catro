@@ -1,6 +1,5 @@
 'use strict'
 
-import * as mkdirp from 'mkdirp'
 import { spawn, ChildProcess } from 'child_process'
 import { fs as fsys } from './promisify'
 import * as fs from 'fs'
@@ -52,11 +51,6 @@ export default class CertManager {
     this.logger = options.logger
     this.customCA = options.customCA
     this.opensslPath = options.opensslPath || 'openssl'
-  }
-
-  public async init() {
-    mkdirp.sync(this.rootPath)
-    await this.initCA()
   }
 
   get CAKeyPath() {
@@ -170,7 +164,7 @@ export default class CertManager {
     return certs
   }
 
-  private async initCA() {
+  public async init() {
     if (this.customCA) {
       this.setCustomCA(this.customCA)
       this.logger.info('Use custom Root CA. copy to: ' + this.CACertPath)

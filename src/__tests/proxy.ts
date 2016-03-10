@@ -1,5 +1,6 @@
 'use strict'
 
+import * as fs from 'fs'
 import * as path from 'path'
 import * as assert from 'assert'
 import * as Request from 'request'
@@ -18,11 +19,15 @@ const localhost = '127.0.0.1'
 createHTTPServer(HTTP_PORT)
 createHTTPSServer(SSL_PORT)
 
+const certPath = path.resolve(__dirname, './cert')
+
+fs.mkdirSync(certPath)
+
 const proxy = new Proxy({
   port: PROXY_PORT,
   https: true,
   rejectUnauthorized: false,
-  certPath: path.resolve(__dirname, './cert')
+  certPath: certPath
 })
 
 proxy.on('log:info', console.log)

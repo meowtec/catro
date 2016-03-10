@@ -10,11 +10,14 @@ const PROXY_PORT = 10169
 const KEY = fs.readFileSync(path.resolve(__dirname, 'resources/cert-server/rootca.key'))
 const CERT = fs.readFileSync(path.resolve(__dirname, 'resources/cert-server/rootca.crt'))
 
+const certPath = path.resolve(__dirname, './cert2')
+fs.mkdirSync(certPath)
+
 const proxy = new Proxy({
   port: PROXY_PORT,
   https: true,
   rejectUnauthorized: false,
-  certPath: path.resolve(__dirname, './cert'),
+  certPath: certPath,
   ca: {
     key: KEY,
     cert: CERT

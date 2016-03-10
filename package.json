@@ -16,8 +16,7 @@
   "author": "Berton Zhu<bertonzh@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "colors": "^1.1.2",
-    "mkdirp": "^0.5.1"
+    "colors": "^1.1.2"
   },
   "devDependencies": {
     "babel-cli": "^6.5.1",
