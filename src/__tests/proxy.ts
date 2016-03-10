@@ -3,7 +3,9 @@
 import * as path from 'path'
 import * as assert from 'assert'
 import * as Request from 'request'
+import * as resources from '../utils/res'
 import Proxy, { RequestHandler } from '../index'
+import { IncomingMessage, ServerResponse } from 'http'
 
 import { createHTTPServer, createHTTPSServer } from './server/server'
 
@@ -78,10 +80,24 @@ function describeGenerate(https: boolean) {
         url: 'http://' + localhost + ':' + PROXY_PORT + '/',
         method: 'GET'
       }, RequestCallbackWrap((error, response, data) => {
-        assert.equal(data, 'hello meoproxy.')
+        assert.equal(data, resources.get('hello.html'))
       }, done))
     })
 
+    it('visit http://proxy:port/ then prevent default response.', (done) => {
+      const text = 'some text.'
+      proxy.once('direct', (req: IncomingMessage, res: ServerResponse, prevent: Function) => {
+        prevent()
+        res.write(text)
+        res.end()
+      })
+      Request({
+        url: 'http://' + localhost + ':' + PROXY_PORT + '/',
+        method: 'GET'
+      }, RequestCallbackWrap((error, response, data) => {
+        assert.equal(data, text)
+      }, done))
+    })
 
     it('replace request headers', (done) => {
       proxy.once('open', (requestHandler: RequestHandler) => {

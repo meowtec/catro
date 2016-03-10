@@ -46,17 +46,8 @@ export default class RequestHandler extends EventEmitter {
     this.logger = options.logger
     this.willBeSent = true
 
-    if (this.req.url.startsWith('/') && this.protocol === 'http') {
-      this.serv(this.req, this.res)
-      return
-    }
-
     this.initRequest()
     setTimeout(() => this.start().catch(this.handleError.bind(this)))
-  }
-
-  private serv(req: http.IncomingMessage, res: http.ServerResponse) {
-    res.end('hello meoproxy.')
   }
 
   private initRequest() {

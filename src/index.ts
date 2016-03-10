@@ -10,6 +10,7 @@ import * as _ from './utils/utils'
 import HttpsServerPool from './https-server-pool'
 import { Headers, Request, Response } from './typed'
 import Logger from './utils/logger'
+import * as resources from './utils/res'
 
 export interface Options {
   port: number
@@ -100,16 +101,30 @@ export default class Proxy extends EventEmitter {
   }
 
   private handleRequest(protocol: string, req: http.IncomingMessage, res: http.ServerResponse) {
-    this.logger.info('Proxy on:request: ' + req.url)
+    const url = req.url
+    this.logger.info('Proxy on:request: ' + url)
 
-    const requestHandler: RequestHandler = new RequestHandler({
-      protocol, req, res,
-      rejectUnauthorized: this.options.rejectUnauthorized,
-      certManager: this.certManager,
-      logger: this.creatLogger('handler')
-    })
+    if (url.startsWith('/') && protocol === 'http') {
+      let prevent = false
+      this.emit('direct', req, res, () => {
+        prevent = true
+      })
+      if (!prevent) {
+        res.end(resources.get('hello.html'))
+      }
 
-    this.emit('open', requestHandler)
+      return
+    }
+    else {
+      const requestHandler: RequestHandler = new RequestHandler({
+        protocol, req, res,
+        rejectUnauthorized: this.options.rejectUnauthorized,
+        certManager: this.certManager,
+        logger: this.creatLogger('handler')
+      })
+
+      this.emit('open', requestHandler)
+    }
   }
 
   private handleConnect(req: http.ServerRequest, socket: net.Socket) {
