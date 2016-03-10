@@ -5,11 +5,11 @@ import * as http from 'http'
 import * as https from 'https'
 import { EventEmitter } from 'events'
 import RequestHandler from './request'
-import CertManager from './cert'
+import CertManager from './utils/cert'
 import * as _ from './utils/utils'
 import HttpsServerPool from './https-server-pool'
 import { Headers, Request, Response } from './typed'
-import Logger from './logger'
+import Logger from './utils/logger'
 
 export interface Options {
   port: number

@@ -1,7 +1,7 @@
 'use strict'
 
 import { EventEmitter } from 'events'
-import { Logger } from './typed'
+import { Logger } from '../typed'
 import 'colors'
 
 export default function Logger(emitter: EventEmitter): (name: string) => Logger {

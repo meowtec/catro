@@ -2,7 +2,7 @@
 
 import * as https from 'https'
 import * as _ from './utils/utils'
-import CertManager from './cert'
+import CertManager from './utils/cert'
 import { emitterPromisify } from './utils/promisify'
 import { EventEmitter } from 'events'
 import { Logger } from './typed'

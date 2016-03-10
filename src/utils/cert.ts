@@ -2,10 +2,10 @@
 
 import * as mkdirp from 'mkdirp'
 import { spawn, ChildProcess } from 'child_process'
-import { fs as fsys } from './utils/promisify'
+import { fs as fsys } from './promisify'
 import * as fs from 'fs'
 import * as path from 'path'
-import { Logger } from './typed'
+import { Logger } from '../typed'
 
 /** return Error */
 const spawnError = (childProcess, errMsg) => {

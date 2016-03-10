@@ -34,7 +34,6 @@ app.all('/0x02', function(req, res) {
 
 })
 
-
 export function createHTTPServer(port) {
   return http.createServer(app).listen(port, () => {
     log.info('HTTP  server run:', 'http://127.0.0.1:' + port)
