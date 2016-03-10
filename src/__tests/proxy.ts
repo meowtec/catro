@@ -20,7 +20,6 @@ createHTTPServer(HTTP_PORT)
 createHTTPSServer(SSL_PORT)
 
 const certPath = path.resolve(__dirname, './cert')
-
 fs.mkdirSync(certPath)
 
 const proxy = new Proxy({
@@ -200,7 +199,7 @@ function describeGenerate(https: boolean) {
 
 describe('#proxy:start', () => {
   it('proxy start', (done) => {
-    proxy.start().then((x) => done(), done)
+    proxy.start().then((proxy) => done(), done)
   })
 })
 describe('#proxy:HTTP', describeGenerate(false))

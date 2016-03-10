@@ -14,7 +14,7 @@ import * as resources from './utils/res'
 
 export interface Options {
   port: number
-  certPath: string
+  certPath?: string
   https?: { (host: string): boolean } | boolean
   rejectUnauthorized?: boolean
   ca?: KeyCertPair
@@ -39,21 +39,25 @@ export default class Proxy extends EventEmitter {
     super()
 
     this.options = options
-    this.certManager = new CertManager({
-      rootPath: options.certPath,
-      logger: this.creatLogger('cert'),
-      customCA: options.ca,
-      opensslPath: options.openssl
-    })
   }
 
   /**
    * Any error on start can be catched here.
    */
   public async start() {
-    await this.certManager.init()
+    const options = Object.assign({}, this.options)
+
+    if (options.https) {
+      this.certManager = new CertManager({
+        rootPath: options.certPath,
+        logger: this.creatLogger('cert'),
+        customCA: options.ca,
+        opensslPath: options.openssl
+      })
+      await this.certManager.init()
+      await this.initHttpsServers()
+    }
     await this.initMainServer()
-    await this.initHttpsServers()
     this.logger.info('Proxy initialize success.')
     return this
   }
