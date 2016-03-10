@@ -17,6 +17,7 @@ export interface Options {
   https?: { (host: string): boolean } | boolean
   rejectUnauthorized?: boolean
   ca?: KeyCertPair
+  openssl?: string
 }
 
 export default class Proxy extends EventEmitter {
@@ -40,7 +41,8 @@ export default class Proxy extends EventEmitter {
     this.certManager = new CertManager({
       rootPath: options.certPath,
       logger: this.creatLogger('cert'),
-      customCA: options.ca
+      customCA: options.ca,
+      opensslPath: options.openssl
     })
   }
 
@@ -51,7 +53,7 @@ export default class Proxy extends EventEmitter {
     await this.certManager.init()
     await this.initMainServer()
     await this.initHttpsServers()
-
+    this.logger.info('Proxy initialize success.')
     return this
   }
 
@@ -72,7 +74,7 @@ export default class Proxy extends EventEmitter {
           reject(err)
         }
         else {
-          this.logger.info('Proxy Start: 127.0.0.1:' + this.options.port)
+          this.logger.info('Proxy Server Start: 127.0.0.1:' + this.options.port)
           resolve(proxy)
         }
       })

@@ -37,6 +37,7 @@ export interface CertManagerOptions {
   rootPath: string
   logger: Logger
   customCA?: KeyCertPair
+  opensslPath?: string
 }
 
 export default class CertManager {
@@ -44,11 +45,13 @@ export default class CertManager {
   rootPath: string
   logger: Logger
   customCA: KeyCertPair
+  opensslPath: string
 
   constructor(options: CertManagerOptions) {
     this.rootPath = options.rootPath
     this.logger = options.logger
     this.customCA = options.customCA
+    this.opensslPath = options.opensslPath || 'openssl'
   }
 
   public async init() {
