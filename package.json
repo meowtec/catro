@@ -16,7 +16,7 @@
   "author": "Berton Zhu<bertonzh@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "minilog": "3.0.0",
+    "colors": "^1.1.2",
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {

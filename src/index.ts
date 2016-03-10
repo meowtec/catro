@@ -8,7 +8,8 @@ import RequestHandler from './request'
 import CertManager from './cert'
 import * as _ from './utils/utils'
 import HttpsServerPool from './https-server-pool'
-import { Headers, Request, Response, Logger } from './typed'
+import { Headers, Request, Response } from './typed'
+import Logger from './logger'
 
 export interface Options {
   port: number
@@ -27,7 +28,9 @@ export default class Proxy extends EventEmitter {
 
   private certManager: CertManager
 
-  private logger = this.getLogger('index')
+  private creatLogger = Logger(this)
+
+  private logger = this.creatLogger('index')
 
   constructor(options: Options) {
     super()
@@ -35,7 +38,7 @@ export default class Proxy extends EventEmitter {
     this.options = options
     this.certManager = new CertManager({
       rootPath: options.certPath,
-      logger: this.getLogger('cert')
+      logger: this.creatLogger('cert')
     })
   }
 
@@ -75,7 +78,7 @@ export default class Proxy extends EventEmitter {
   private initHttpsServers() {
     this.httpsServerPool = new HttpsServerPool({
       certManager: this.certManager,
-      logger: this.getLogger('server-pool')
+      logger: this.creatLogger('server-pool')
     })
 
     this.httpsServerPool.on('new', (server: https.Server, domain) => {
@@ -97,26 +100,10 @@ export default class Proxy extends EventEmitter {
       protocol, req, res,
       rejectUnauthorized: this.options.rejectUnauthorized,
       certManager: this.certManager,
-      logger: this.getLogger('handler')
+      logger: this.creatLogger('handler')
     })
 
     this.emit('open', requestHandler)
-  }
-
-  private getLogger(name: string): Logger {
-    const self = this
-
-    return {
-      info(...args) {
-        self.emit.apply(self, ['log:info', '[' + name + ']', ...args])
-      },
-      warn(...args) {
-        self.emit.apply(self, ['log:warn', name, ...args])
-      },
-      error(...args) {
-        self.emit.apply(self, ['error', name, ...args])
-      }
-    }
   }
 
   private handleConnect(req: http.ServerRequest, socket: net.Socket) {

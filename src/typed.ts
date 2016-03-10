@@ -27,3 +27,7 @@ export interface Logger {
   error(...args)
   warn(...args)
 }
+
+export interface LoggerFactory {
+  (name: string): Logger
+}

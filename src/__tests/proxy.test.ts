@@ -24,6 +24,8 @@ const proxy = new Proxy({
 })
 
 proxy.on('log:info', console.log)
+proxy.on('log:warn', console.warn)
+proxy.on('error', console.error)
 
 const request = Request.defaults({
   strictSSL: false,
