@@ -177,6 +177,8 @@ export default class CertManager {
       await promisifyChildProcess(this.genCACert())
       this.logger.info('Root CA has been created! at: ' + this.CACertPath)
     }
+
+    return this
   }
 
 }
