@@ -48,6 +48,10 @@ export default class Proxy extends EventEmitter {
     const options = Object.assign({}, this.options)
 
     if (options.https) {
+      if (!options.certPath) {
+        throw new Error('options.certPath is not defined.')
+      }
+
       this.certManager = new CertManager({
         rootPath: options.certPath,
         logger: this.creatLogger('cert'),
