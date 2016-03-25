@@ -8,7 +8,7 @@
     "url": "https://github.com/meowtec/catro"
   },
   "scripts": {
-    "typings": "typings install",
+    "i": "npm i babel-cli typescript tslint typings -g && typings install",
     "lint": "tslint ./src/*.ts* ./src/**/*.ts* ./src/**/**/*.ts* ./src/**/**/*.ts*",
     "build": "rm -rf built && tsc -p . && babel built --out-dir built",
     "test": "npm run lint && npm run build && cp -r src/__tests/resources ./built/__tests/ && mocha built/__tests"
@@ -19,16 +19,12 @@
     "colors": "^1.1.2"
   },
   "devDependencies": {
-    "babel-cli": "^6.5.1",
     "babel-plugin-transform-async-to-generator": "^6.7.4",
     "babel-plugin-transform-es2015-destructuring": "^6.6.5",
     "babel-plugin-transform-es2015-parameters": "^6.7.0",
     "babel-plugin-transform-es2015-spread": "^6.6.5",
     "express": "^4.13.4",
     "mocha": "^2.4.5",
-    "request": "^2.69.0",
-    "tslint": "^3.3.0",
-    "typescript": "^1.8.0",
-    "typings": "^0.7.9"
+    "request": "^2.69.0"
   }
 }
