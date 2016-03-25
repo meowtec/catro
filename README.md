@@ -2,6 +2,7 @@
 HTTP proxy for Node.
 Core of [MeoProxy](https://github.com/meowtec/meoproxy).
 
+[![Build Status](https://travis-ci.org/meowtec/catro.svg?branch=master)](https://travis-ci.org/meowtec/catro)
 ## Development
 Install OpenSSL firstly.
 
