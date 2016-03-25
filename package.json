@@ -10,7 +10,7 @@
   "scripts": {
     "typings": "typings install",
     "lint": "tslint ./src/*.ts* ./src/**/*.ts* ./src/**/**/*.ts* ./src/**/**/*.ts*",
-    "build": "rm -rf built && tsc -p . && PRESET_NODE_VERSION='> 4.0' babel built --out-dir built --presets es2015-auto",
+    "build": "rm -rf built && tsc -p . && babel built --out-dir built",
     "test": "npm run lint && npm run build && cp -r src/__tests/resources ./built/__tests/ && mocha built/__tests"
   },
   "author": "Berton Zhu<bertonzh@gmail.com>",
@@ -20,7 +20,10 @@
   },
   "devDependencies": {
     "babel-cli": "^6.5.1",
-    "babel-preset-es2015-auto": "^1.0.1",
+    "babel-plugin-transform-async-to-generator": "^6.7.4",
+    "babel-plugin-transform-es2015-destructuring": "^6.6.5",
+    "babel-plugin-transform-es2015-parameters": "^6.7.0",
+    "babel-plugin-transform-es2015-spread": "^6.6.5",
     "express": "^4.13.4",
     "mocha": "^2.4.5",
     "request": "^2.69.0",
