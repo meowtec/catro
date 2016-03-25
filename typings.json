@@ -1,0 +1,12 @@
+{
+  "ambientDependencies": {
+    "node": "registry:dt/node#4.0.0+20160319033040"
+  },
+  "ambientDevDependencies": {
+    "express": "registry:dt/express#4.0.0+20160317120654",
+    "mocha": "registry:dt/mocha#2.2.5+20160317120654"
+  },
+  "devDependencies": {
+    "request": "registry:npm/request#2.69.0+20160304121250"
+  }
+}

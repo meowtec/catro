@@ -35,19 +35,25 @@ app.all('/0x02', function(req, res) {
 })
 
 export function createHTTPServer(port) {
-  return http.createServer(app).listen(port, () => {
+  const server = http.createServer(app)
+  server.listen(port, () => {
     log.info('HTTP  server run:', 'http://127.0.0.1:' + port)
   })
+  return server
 }
 
-export function createHTTPSServer(port): https.Server {
+export function createHTTPSServer(port) {
   const options = {
     key: fs.readFileSync(certPath('localhost.key')),
     cert: fs.readFileSync(certPath('localhost.crt'))
   }
 
-  return https.createServer(options, app).listen(port, () => {
+  const server = https.createServer(options, app)
+
+  server.listen(port, () => {
     log.info('HTTPS server run:', 'https://127.0.0.1:' + port)
     log.info('Root CA at:', certPath('rootca.cert'), 'Please install root CA on your OS.')
   })
+
+  return server
 }

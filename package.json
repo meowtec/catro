@@ -24,8 +24,8 @@
     "express": "^4.13.4",
     "mocha": "^2.4.5",
     "request": "^2.69.0",
-    "tsd": "^0.6.5",
     "tslint": "^3.3.0",
-    "typescript": "^1.8.0"
+    "typescript": "^1.8.0",
+    "typings": "^0.7.9"
   }
 }
