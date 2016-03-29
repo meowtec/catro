@@ -1,7 +1,7 @@
 'use strict'
 
 import { spawn, ChildProcess } from 'child_process'
-import { fs as fsys } from './promisify'
+import { fs as fsys } from '../catro-utils'
 import * as fs from 'fs'
 import * as path from 'path'
 import { Logger } from '../typed'

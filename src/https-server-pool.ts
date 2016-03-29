@@ -1,9 +1,8 @@
 'use strict'
 
 import * as https from 'https'
-import * as _ from './utils/utils'
 import CertManager from './utils/cert'
-import { emitterPromisify } from './utils/promisify'
+import { emitterPromisify, debounce } from './catro-utils'
 import { EventEmitter } from 'events'
 import { Logger } from './typed'
 
@@ -41,7 +40,7 @@ export default class Pool extends EventEmitter {
     /**
      * 如果 server 持续 60s 内没有收到请求，则关闭
      */
-    const timeout = _.debounce(600000)
+    const timeout = debounce(600000)
 
     newServer.on('timeoff', () => {
       timeout(() => newServer.close())

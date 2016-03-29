@@ -4,7 +4,8 @@ import * as https from 'https'
 import * as http from 'http'
 import * as fs from 'fs'
 import * as express from 'express'
-import { resource, radeStreamAll, createLogger } from '../utils/'
+import { resource, createLogger } from '../utils/'
+import { readStreamAll } from '../../catro-utils'
 
 const certPath = (filename) => resource('cert-server/' + filename)
 
@@ -23,7 +24,7 @@ app.post('/0x01', function(req, res) {
 })
 
 app.all('/0x02', function(req, res) {
-  radeStreamAll(req, (data) => {
+  readStreamAll(req).then((data) => {
     const body = data.toString()
 
     res.send({
@@ -31,7 +32,6 @@ app.all('/0x02', function(req, res) {
       body: body
     })
   })
-
 })
 
 export function createHTTPServer(port) {

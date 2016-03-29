@@ -7,7 +7,7 @@ import { EventEmitter } from 'events'
 import CertManager from './utils/cert'
 import * as resources from './utils/res'
 import { Request, Response, Logger } from './typed'
-import { emitterPromisify } from './utils/promisify'
+import { emitterPromisify } from './catro-utils'
 
 export interface RequestHandlerOptions {
   protocol: string

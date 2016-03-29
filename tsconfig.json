@@ -11,6 +11,7 @@
   "exclude": [
     "node_modules",
     "catro.d.ts",
+    "src/catro-utils/tests",
     "typings/browser",
     "typings/browser.d.ts"
   ]

@@ -6,10 +6,10 @@ import * as https from 'https'
 import { EventEmitter } from 'events'
 import RequestHandler from './request'
 import CertManager, { KeyCertPair } from './utils/cert'
-import * as _ from './utils/utils'
 import HttpsServerPool from './https-server-pool'
 import { Headers, Request, Response } from './typed'
 import Logger from './utils/logger'
+import { parseHost } from './catro-utils'
 import * as resources from './utils/res'
 
 export interface Options {
@@ -140,7 +140,7 @@ export default class Proxy extends EventEmitter {
     logger.info('Proxy on:connect: ' + req.url)
 
     ; (async () => {
-      const hostInfo = _.parseHost(req.url)
+      const hostInfo = parseHost(req.url)
       let tcpAddr: {
         host: string
         port: number
