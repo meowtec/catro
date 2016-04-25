@@ -2,5 +2,9 @@
 /typings
 /typings-dev
 /built/__tests
-/.vscode
 /cert
+/tsconfig.json
+/tslint.json
+/.vscode
+/.travis.yml
+/.babelrc
