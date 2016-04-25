@@ -8,7 +8,8 @@
     "url": "https://github.com/meowtec/catro"
   },
   "scripts": {
-    "i": "npm i babel-cli typescript tslint typings -g && typings install",
+    "i": "npm run i:sub && npm i babel-cli typescript tslint typings -g && typings install",
+    "i:sub": "git submodule init && git submodule update",
     "lint": "tslint ./src/*.ts* ./src/**/*.ts* ./src/**/**/*.ts* ./src/**/**/*.ts*",
     "build": "rm -rf built && tsc -p . && babel built --out-dir built",
     "test": "npm run lint && npm run build && cp -r src/__tests/resources ./built/__tests/ && mocha built/__tests"

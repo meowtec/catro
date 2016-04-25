@@ -47,7 +47,7 @@ export default class RequestHandler extends EventEmitter {
     this.willBeSent = true
 
     this.initRequest()
-    setTimeout(() => this.start().catch(this.handleError.bind(this)))
+    process.nextTick(() => this.start().catch(this.handleError.bind(this)))
   }
 
   private initRequest() {
