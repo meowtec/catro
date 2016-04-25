@@ -5,8 +5,10 @@ import * as path from 'path'
 import * as assert from 'assert'
 import * as Request from 'request'
 import * as resources from '../utils/res'
+import { readStreamAll } from '../catro-utils'
 import Proxy, { RequestHandler } from '../index'
 import { IncomingMessage, ServerResponse } from 'http'
+import { Readable } from 'stream'
 
 import { createHTTPServer, createHTTPSServer } from './server/server'
 
@@ -55,7 +57,7 @@ function describeGenerate(https: boolean) {
     : 'http://' + localhost + ':' + HTTP_PORT
 
   return () => {
-    it('normal response', (done) => {
+    it('Normal response', (done) => {
       request(httpServer + '/0x00', RequestCallbackWrap((error, response, data) => {
         assert.equal(data, 'hello world, protero!')
         assert.equal(response.headers['content-type'], 'text/html; charset=utf-8')
@@ -63,7 +65,7 @@ function describeGenerate(https: boolean) {
       }, done))
     })
 
-    it('normal request', (done) => {
+    it('Normal request', (done) => {
       request({
         url: httpServer + '/0x01',
         method: 'POST',
@@ -79,7 +81,7 @@ function describeGenerate(https: boolean) {
       })
     })
 
-    it('visit http://proxy:port/', (done) => {
+    it('Visit http://proxy:port/', (done) => {
       Request({
         url: 'http://' + localhost + ':' + PROXY_PORT + '/',
         method: 'GET'
@@ -88,7 +90,7 @@ function describeGenerate(https: boolean) {
       }, done))
     })
 
-    it('visit http://proxy:port/ then prevent default response.', (done) => {
+    it('Visit http://proxy:port/ then prevent default response.', (done) => {
       const text = 'some text.'
       proxy.once('direct', (req: IncomingMessage, res: ServerResponse, prevent: Function) => {
         prevent()
@@ -103,7 +105,7 @@ function describeGenerate(https: boolean) {
       }, done))
     })
 
-    it('replace request headers', (done) => {
+    it('Replace request headers', (done) => {
       proxy.once('open', (requestHandler: RequestHandler) => {
         requestHandler.replaceRequest = (request) => {
           return Object.assign({}, request, {
@@ -120,7 +122,28 @@ function describeGenerate(https: boolean) {
       }, done))
     })
 
-    it('replace request body and method', (done) => {
+    it('Read request body to fs writable', (done) => {
+      let reqBody
+      proxy.once('open', (requestHandler: RequestHandler) => {
+        readStreamAll(<Readable>requestHandler.request.body).then(buffer => {
+          reqBody = buffer.toString()
+        })
+      })
+
+      request({
+        url: httpServer + '/0x02',
+        method: 'POST'
+      }, RequestCallbackWrap((error, response, data) => {
+        const body = JSON.parse(data).body
+        assert.equal(reqBody, body)
+        assert.equal(reqBody, 'body=body')
+      }, done)).form({
+        'body': 'body'
+      })
+
+    })
+
+    it('Replace request body and method', (done) => {
       proxy.once('open', (requestHandler: RequestHandler) => {
         requestHandler.replaceRequest = (request) => {
           return Object.assign({}, request, {
@@ -137,7 +160,7 @@ function describeGenerate(https: boolean) {
     })
 
 
-    it('replace response status and headers', (done) => {
+    it('Replace response status and headers', (done) => {
       proxy.once('open', (requestHandler: RequestHandler) => {
         requestHandler.replaceResponse = (response) => {
           return Object.assign({}, response, {
@@ -155,7 +178,7 @@ function describeGenerate(https: boolean) {
       }, done))
     })
 
-    it('replace response body', (done) => {
+    it('Replace response body', (done) => {
       proxy.once('open', (requestHandler: RequestHandler) => {
         requestHandler.replaceResponse = (response) => {
           return Object.assign({}, response, {
@@ -169,7 +192,7 @@ function describeGenerate(https: boolean) {
       }, done))
     })
 
-    it('handler events', (done) => {
+    it('Handler events', (done) => {
       const arr = [0, 0, 0]
       proxy.once('open', (requestHandler: RequestHandler) => {
         requestHandler.on('requestFinish', () => arr[0] = 1)
@@ -185,7 +208,7 @@ function describeGenerate(https: boolean) {
       request(httpServer + '/0x00', RequestCallbackWrap((error, response, data) => {}))
     })
 
-    it('handler url', (done) => {
+    it('Handler url', (done) => {
       proxy.once('open', (requestHandler: RequestHandler) => {
         assert.equal(requestHandler.url, httpServer + '/0x00')
         done()
@@ -198,7 +221,7 @@ function describeGenerate(https: boolean) {
 }
 
 describe('#proxy:start', () => {
-  it('proxy start', (done) => {
+  it('Proxy start', (done) => {
     proxy.start().then((proxy) => done(), done)
   })
 })

@@ -28,13 +28,13 @@ const request = Request.defaults({
 
 describe('#proxy:no ssl', () => {
 
-  it('should proxy start', (done) => {
+  it('Proxy start', (done) => {
     proxy.start().then((proxy) => {
       done()
     }, done)
   })
 
-  it('should bypass https', (done) => {
+  it('Bypass https', (done) => {
     proxy.once('open', (requestHandler: RequestHandler) => {
       requestHandler.replaceRequest = (request) => {
         done(new Error('should not replaced'))

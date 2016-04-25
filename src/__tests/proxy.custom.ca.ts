@@ -25,7 +25,7 @@ const proxy = new Proxy({
 })
 
 describe('#proxy:custom', () => {
-  it('should use custom CA', (done) => {
+  it('Use custom CA', (done) => {
     proxy.start().then((proxy) => {
       assert.equal(fs.readFileSync(proxy.CACertPath).toString(), CERT.toString())
       done()
