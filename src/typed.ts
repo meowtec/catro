@@ -31,3 +31,9 @@ export interface Logger {
 export interface LoggerFactory {
   (name: string): Logger
 }
+
+export interface HttpsConnect {
+  interrupt: boolean
+  hostname: string
+  port: number
+}

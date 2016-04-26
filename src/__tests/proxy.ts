@@ -6,7 +6,7 @@ import * as assert from 'assert'
 import * as Request from 'request'
 import * as resources from '../utils/res'
 import { readStreamAll } from '../catro-utils'
-import Proxy, { RequestHandler } from '../index'
+import Proxy, { RequestHandler, HttpsConnect } from '../index'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Readable } from 'stream'
 
@@ -159,7 +159,6 @@ function describeGenerate(https: boolean) {
       }, done))
     })
 
-
     it('Replace response status and headers', (done) => {
       proxy.once('open', (requestHandler: RequestHandler) => {
         requestHandler.replaceResponse = (response) => {
@@ -194,18 +193,26 @@ function describeGenerate(https: boolean) {
 
     it('Handler events', (done) => {
       const arr = [0, 0, 0]
+      let connect: HttpsConnect
+
       proxy.once('open', (requestHandler: RequestHandler) => {
         requestHandler.on('requestFinish', () => arr[0] = 1)
         requestHandler.on('response', () => arr[1] = 1)
-        requestHandler.on('finish', () => {
-          arr[2] = 1
-
-          assert.deepEqual(arr, [1, 1, 1])
-          done()
-        })
+        requestHandler.on('finish', () => arr[2] = 1)
       })
 
-      request(httpServer + '/0x00', RequestCallbackWrap((error, response, data) => {}))
+      proxy.once('connect', (connectMsg: HttpsConnect) => connect = connectMsg)
+
+      request(httpServer + '/0x00', RequestCallbackWrap((error, response, data) => {
+        if (https) {
+          assert.deepEqual(connect, {
+            hostname: localhost,
+            port: SSL_PORT,
+            interrupt: true
+          })
+        }
+        assert.deepEqual(arr, [1, 1, 1])
+      }, done))
     })
 
     it('Handler url', (done) => {
@@ -225,5 +232,7 @@ describe('#proxy:start', () => {
     proxy.start().then((proxy) => done(), done)
   })
 })
+
 describe('#proxy:HTTP', describeGenerate(false))
+
 describe('#proxy:HTTPS', describeGenerate(true))

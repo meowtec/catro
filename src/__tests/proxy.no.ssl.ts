@@ -1,6 +1,6 @@
 'use strict'
 
-import Proxy, { RequestHandler } from '../index'
+import Proxy, { RequestHandler, HttpsConnect } from '../index'
 import * as assert from 'assert'
 import * as Request from 'request'
 
@@ -46,8 +46,18 @@ describe('#proxy:no ssl', () => {
       }
     })
 
+    let connect: HttpsConnect
+    proxy.once('connect', (connectMsg: HttpsConnect) => {
+      connect = connectMsg
+    })
+
     request('https://' + localhost + ':' + SSL_PORT + '/0x00', (error, response, data) => {
       assert.equal(data, 'hello world, protero!')
+      assert.deepEqual(connect, {
+        hostname: localhost,
+        port: SSL_PORT,
+        interrupt: false
+      })
       done()
     })
   })

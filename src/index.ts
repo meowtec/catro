@@ -7,7 +7,7 @@ import { EventEmitter } from 'events'
 import RequestHandler from './request'
 import CertManager, { KeyCertPair } from './utils/cert'
 import HttpsServerPool from './https-server-pool'
-import { Headers, Request, Response } from './typed'
+import { Headers, Request, Response, HttpsConnect } from './typed'
 import Logger from './utils/logger'
 import { parseHost } from './catro-utils'
 import * as resources from './utils/res'
@@ -41,9 +41,6 @@ export default class Proxy extends EventEmitter {
     this.options = options
   }
 
-  /**
-   * Any error on start can be catched here.
-   */
   public async start() {
     const options = Object.assign({}, this.options)
 
@@ -147,7 +144,8 @@ export default class Proxy extends EventEmitter {
       }
 
       const https = this.options.https
-      if (https === true || (https instanceof Function && https(req.url))) {
+      const interrupt = https === true || (https instanceof Function && https(req.url))
+      if (interrupt) {
         const server = await this.httpsServerPool.getServer(hostInfo.hostname)
 
         tcpAddr = {
@@ -167,7 +165,7 @@ export default class Proxy extends EventEmitter {
 
       const upSocket = net.connect(tcpAddr)
 
-      upSocket.on('connect', function() {
+      upSocket.on('connect', () => {
         socket.write('HTTP/' + req.httpVersion + ' 200 OK\r\n\r\n', 'UTF-8')
         upSocket.pipe(socket)
         socket.pipe(upSocket)
@@ -181,6 +179,10 @@ export default class Proxy extends EventEmitter {
         upSocket.destroy()
         logger.warn('Socket on:timeout: ' + hostString)
       })
+
+      this.emit('connect', Object.assign({
+        interrupt
+      }, hostInfo))
     })()
     .catch((error) => {
       logger.error('HandleConnect error: ', error.toString())
@@ -194,7 +196,7 @@ export default class Proxy extends EventEmitter {
 }
 
 export {
-  Headers, Request, Response
+  Headers, Request, Response, HttpsConnect
 }
 
 export type RequestHandler = RequestHandler
